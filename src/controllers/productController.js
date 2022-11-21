@@ -4,7 +4,7 @@ import Product from '../models/product.js';
 class productControllerClass{
     #container
     constructor(){
-        let filepath = url.fileURLToPath(new URL('.', import.meta.url))+"../productos.txt";
+        let filepath = url.fileURLToPath(new URL('.', import.meta.url))+"../products.txt";
         this.#container = new Container(filepath);
     }
     controllerGetAllProducts (req, response){
@@ -20,7 +20,7 @@ class productControllerClass{
     controllerGetProductByID(req, response){
         try{
             if(+req.params.id){
-                const buscado = this.#container.getById(+req.params.id);
+                const buscado = this.#container.getItemByID(+req.params.id);
                 if(!buscado){    
                     response.status(404);      
                     response.json({ mensaje: `no se encontró el producto con el id ${req.params.id}` });
