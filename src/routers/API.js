@@ -1,5 +1,6 @@
 import express from 'express';
 import productController from '../controllers/productController.js'
+import cartController from '../controllers/cartController.js'
 const routerAPI = express.Router();
 //products
 routerAPI.get('/products',productController.controllerGetAllProducts);

@@ -15,32 +15,37 @@ class Container{
             this.#items = JSON.parse(fs.readFileSync(filePath,'utf8'))
         }
     }
-    async deleteFile(){
+    deleteFile = async () => {
         this.#fs.promises.unlink(this.#filePath)
         .then(()=>console.log("Información eliminada!"))
         .catch(()=>console.log("El archivo no fue encontrado"));
     }
-    async writeData(stringToWrite){
+    writeData = async (stringToWrite) => {
         this.#fs.promises.writeFile(this.#filePath,stringToWrite)
         .then(()=>console.log("Información guardada!"))
         .catch(()=>console.log("Falló la carga de información"));
     }
-    async saveDataOnFile(){
+    saveDataOnFile = async () => {
         this.deleteFile()
         .then(()=>this.writeData(JSON.stringify(this.#items)))
         .catch(()=>console.log("Falló el borrado de archivo"));
     }
-    async save(object){
+    save = async (object) => {
         this.#items.push(object);
-        await this.saveDataOnFile();
+        //await this.saveDataOnFile();
     }
-    getAllItems(){
+    getAllItems= () => {
         return this.#items;
     }
-    getItemByID(idItem){
+    getItemByID = (idItem) => {
         //creates a new array (with the map function) containing only the IDs from the list of items, then indexes by ID and returns the item or null if the index was -1
-        let index = this.#items.map((item => item.id)).indexOf(+idItem);
+        let index = this.#items.map((item => item.id)).indexOf(idItem);
         return (index !== -1) ? this.#items[index] : null;
+    }
+    modifyItemByID = async (idItem, newItemParam) => {
+        let index = this.#items.map((item => item.id)).indexOf(idItem);
+        this.#items[index].modifyProduct(newItemParam.title, newItemParam.price, newItemParam.thumbnail);
+        //await this.saveDataOnFile();
     }
 }
 export default Container;
