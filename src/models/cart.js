@@ -29,5 +29,11 @@ class Cart{
         let index = this.products.map((item => item.id)).indexOf(productID);
         (index !== -1) && this.products.splice(index,1);
     }
+    hasProduct(idItem){
+        if(this.getProductByID(idItem) !== null){
+            return true;
+        }
+        return false;
+    }
 }
 export default Cart;

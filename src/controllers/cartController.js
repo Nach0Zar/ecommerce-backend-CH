@@ -86,10 +86,17 @@ class cartControllerClass{
     controllerDeleteProductFromCartByID = (req, response) => {
         try{
             if(this.#container.getItemByID(req.params.id_cart)){
-                this.#container.deleteProductInCart(req.params.id_cart, req.params.id_prod);
                 //check if cart has product with matching id
-                response.status(200);
-                response.json({mensaje: `el item ${req.params.id_prod} del carrito ${req.params.id_cart} fue eliminado.`}) 
+                if(this.#container.getItemByID(req.params.id_cart).hasProduct(req.params.id_prod)){
+                    this.#container.deleteProductInCart(req.params.id_cart, req.params.id_prod);
+                    response.status(200);
+                    response.json({mensaje: `el item ${req.params.id_prod} del carrito ${req.params.id_cart} fue eliminado.`}) 
+                
+                }
+                else{
+                    response.status(404);      
+                    response.json({ mensaje: `no se encontró el item ${req.params.id_prod} en el carrito ${req.params.id_cart}` });
+                }
             }
             else{
                 response.status(404);      
