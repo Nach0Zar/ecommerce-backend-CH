@@ -48,17 +48,24 @@ class cartControllerClass{
                 const cart = this.#container.getItemByID(req.params.id_cart);
                 if(!cart){    
                     response.status(404);      
-                    response.json({ mensaje: `no se encontró el producto con el id ${req.params.id}` });
+                    response.json({ mensaje: `no se encontró el carrito con el id ${req.params.id_cart}` });
                 }
                 else{
-                    this.#container.addProductToCart(req.params.id_cart, productContainer.getItemByID(req.body.id_prod));
-                    response.status(200);
-                    response.json(this.#container.getItemByID(req.params.id_cart));
+                    let product = productContainer.getItemByID(req.body.id_prod);
+                    if(product !== null){
+                        this.#container.addProductToCart(req.params.id_cart, product);
+                        response.status(200);
+                        response.json(this.#container.getItemByID(req.params.id_cart));
+                    }
+                    else{    
+                        response.status(404);      
+                        response.json({ mensaje: `no se encontró el item con el id ${req.body.id_prod}` });
+                    }
                 }
             }
             else{
                 response.status(404);      
-                response.json({ mensaje: `el id ${req.params.id} es inválido` });
+                response.json({ mensaje: `el id ${req.params.id_cart} es inválido` });
             }
         }
         catch{
