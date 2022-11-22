@@ -1,4 +1,6 @@
 import fs from 'fs';
+import Product from './product.js';
+import Cart from './cart.js';
 class Container{
     #fs;
     #items;
@@ -12,7 +14,28 @@ class Container{
         }
         else{
             //loads previous items to the list
-            this.#items = JSON.parse(fs.readFileSync(filePath,'utf8'))
+            let list = JSON.parse(fs.readFileSync(filePath,'utf8'));
+            this.#items = [];
+            //checks if it is a product container or cart container.
+            //this part will be deleted when DB is implemented as no container will be needed
+            if (list[0].title !== undefined){
+                list.forEach(listedProduct => {
+                    let product = new Product(listedProduct.title, listedProduct.price, listedProduct.thumbnail);
+                    product.setID(listedProduct.id);
+                    this.#items.push(product);
+                });
+            }
+            else{
+                list.forEach(cart => {
+                    let productParsed = [];
+                    cart.products.forEach(listedProduct => {
+                        let product = new Product(listedProduct.title, listedProduct.price, listedProduct.thumbnail);
+                        product.setID(listedProduct.id);
+                        productParsed.push(product);
+                    });
+                    this.#items.push(new Cart(productParsed));
+                })
+            }
         }
     }
     deleteFile = async () => {

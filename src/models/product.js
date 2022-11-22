@@ -10,28 +10,31 @@ class Product{
         this.thumbnail = thumbnail
         this.id = randomUUID();
     }
-    getTitle = () => {
+    getTitle(){
         return this.title;
     }
-    setTitle = (title) => {
+    setTitle(title){
         this.title = title;
     }
-    getPrice = () => {
+    getPrice(){
         return this.price;
     }
-    setPrice = (price) => {
+    setPrice(price){
         this.price = price;   
     }
-    setThumbnail = () => {
+    setThumbnail(){
         return this.thumbnail;
     }
-    getThumbnail = (thumbnail) => {
+    getThumbnail(thumbnail){
         this.thumbnail = thumbnail;  
     }
-    getID = () => {
+    getID(){
         return this.id;
     }
-    modifyProduct = (title, price, thumbnail) => {
+    setID(id){
+        this.id = id;
+    }
+    modifyProduct(title, price, thumbnail){
         this.setTitle(title);
         this.setPrice(price);
         this.setThumbnail(thumbnail);
