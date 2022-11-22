@@ -9,7 +9,7 @@ app.use('/static', express.static('public'));
 //routes
 app.use('/api/',routerAPI);
 //server port listener
-const port = process.env.PORT || 8080;
+const port = process.env.PORT ?? 8080;
 const server = app.listen(port,()=>{
     console.log(`Successfully connected to port ${server.address().port}`)
 });
