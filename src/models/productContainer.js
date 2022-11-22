@@ -1,5 +1,4 @@
 import Container from "./container.js";
-import fs from 'fs';
 import Product from "./product.js";
 import * as url from 'url';
 class ProductContainerClass extends Container{
