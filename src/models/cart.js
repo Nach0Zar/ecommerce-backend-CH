@@ -19,9 +19,15 @@ class Cart{
     getID(){
         return this.id;
     }
-    modifyProductByID(title, price, thumbnail){
-        let index = this.products.map((item => item.id)).indexOf(idItem);
-        this.products[index].modifyProduct(title, price, thumbnail);
+    setID(id){
+        this.id = id;
+    }
+    addProduct(product){
+        this.products.push(product);
+    }
+    deleteProduct(productID){
+        let index = this.products.map((item => item.id)).indexOf(productID);
+        (index !== -1) && this.products.splice(index,1);
     }
 }
 export default Cart;
