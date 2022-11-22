@@ -1,11 +1,9 @@
-import * as url from 'url';
-import Container from '../models/container.js';
+import productContainer from '../models/productContainer.js';
 import Product from '../models/product.js';
 class productControllerClass{
     #container
     constructor(){
-        let filePath = url.fileURLToPath(new URL('.', import.meta.url))+"../products.txt";
-        this.#container = new Container(filePath);
+        this.#container = productContainer;
     }
     controllerGetAllProducts = (req, response) => {
         try{
@@ -49,7 +47,7 @@ class productControllerClass{
                     response.json({ mensaje: `no se encontró el producto con el id ${req.params.id}` });
                 }
                 else{
-                    this.#container.modifyItemByID(req.params.id, req.body)
+                    this.#container.modifyProductByID(req.params.id, req.body)
                     response.status(200);
                     response.json(this.#container.getItemByID(req.params.id));
                 }
@@ -100,6 +98,6 @@ class productControllerClass{
         }
     }
 }
-const productController = new productControllerClass
+const productController = new productControllerClass();
 Object.freeze(productController);
 export default productController;
