@@ -8,35 +8,7 @@ class Container{
     constructor(){
         this.filePath = "";
         this.fs = fs;
-        //if file doesn't exists or if it is empty
-        // if(!fs.existsSync(filePath) || fs.readFileSync(filePath,'utf8').length == 0){
-        //     this.items = [];
-        // }
-        // else{
-        //     //loads previous items to the list
-        //     let list = JSON.parse(fs.readFileSync(filePath,'utf8'));
-        //     this.items = [];
-        //     //checks if it is a product container or cart container.
-        //     //this part will be deleted when DB is implemented as no container will be needed
-        //     if (list[0].title !== undefined){
-        //         list.forEach(listedProduct => {
-        //             let product = new Product(listedProduct.title, listedProduct.price, listedProduct.thumbnail);
-        //             product.setID(listedProduct.id);
-        //             this.items.push(product);
-        //         });
-        //     }
-        //     else{
-        //         list.forEach(cart => {
-        //             let productParsed = [];
-        //             cart.products.forEach(listedProduct => {
-        //                 let product = new Product(listedProduct.title, listedProduct.price, listedProduct.thumbnail);
-        //                 product.setID(listedProduct.id);
-        //                 productParsed.push(product);
-        //             });
-        //             this.items.push(new Cart(productParsed));
-        //         })
-        //     }
-        // }
+        this.items = [];
     }
     async deleteFile(){
         this.fs.promises.unlink(this.filePath)

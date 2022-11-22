@@ -77,12 +77,12 @@ class productControllerClass{
     controllerDeleteProductByID = (req, response) => {
         try{
             if(req.params.id){
-                if(!this.#container.getById(req.params.id)){
+                if(!this.#container.getItemByID(req.params.id)){
                     response.status(404);      
                     response.json({ mensaje: `no se encontró el producto con el id ${req.params.id}` });
                 } 
                 else{   
-                    this.#container.deleteById(req.params.id);
+                    this.#container.deleteItemByID(req.params.id);
                     response.status(200);    
                     response.json({mensaje: `el item con el id ${req.params.id} fue eliminado.`}) 
                 }

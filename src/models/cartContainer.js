@@ -4,16 +4,12 @@ import Product from "./product.js";
 import Cart from "./cart.js";
 import * as url from 'url';
 class CartContainerClass extends Container{
-    filePath;
     constructor(){
         super();
         this.filePath = url.fileURLToPath(new URL('.', import.meta.url))+"../carts.txt";
-        //if file doesn't exists or if it is empty
-        if(!this._fs.existsSync(filePath) || this._fs.readFileSync(filePath,'utf8').length == 0){
-            this._items = [];
-        }
-        else{
-            //loads previous items to the list
+       //if file exists and it is not empty
+       if(this.fs.existsSync(this.filePath) && this.fs.readFileSync(this.filePath,'utf8').length > 0){
+        //loads previous items to the list
             let list = JSON.parse(this._fs.readFileSync(filePath,'utf8'));
             this._items = [];
             list.forEach(cart => {
