@@ -1,13 +1,11 @@
-import * as url from 'url';
-import Container from '../models/container.js';
+import productContainer from '../models/productContainer.js';
 import Product from '../models/product.js';
 class productControllerClass{
     #container
     constructor(){
-        let filepath = url.fileURLToPath(new URL('.', import.meta.url))+"../products.txt";
-        this.#container = new Container(filepath);
+        this.#container = productContainer;
     }
-    controllerGetAllProducts (req, response){
+    controllerGetAllProducts = (req, response) => {
         try{
             response.status(200);
             response.json(this.#container.getAllItems());
@@ -17,17 +15,17 @@ class productControllerClass{
             response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
         }
     }
-    controllerGetProductByID(req, response){
+    controllerGetProductByID = (req, response) => {
         try{
-            if(+req.params.id){
-                const buscado = this.#container.getItemByID(+req.params.id);
-                if(!buscado){    
+            if(req.params.id){
+                const item = this.#container.getItemByID(req.params.id);
+                if(!item){    
                     response.status(404);      
                     response.json({ mensaje: `no se encontró el producto con el id ${req.params.id}` });
                 }
                 else{
                     response.status(200);
-                    response.json(buscado);
+                    response.json(item);
                 }
             }
             else{
@@ -40,18 +38,18 @@ class productControllerClass{
             response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
         }
     }
-    controllerPutProductByID(req, response){
+    controllerPutProductByID = (req, response) => {
         try{
-            if(+req.params.id){
-                const buscado = this.#container.getById(+req.params.id);
-                if(!buscado){    
+            if(req.params.id){
+                const item = this.#container.getItemByID(req.params.id);
+                if(!item){    
                     response.status(404);      
                     response.json({ mensaje: `no se encontró el producto con el id ${req.params.id}` });
                 }
                 else{
-                    this.#container.modifyProductById(+req.params.id, req.body)
+                    this.#container.modifyProductByID(req.params.id, req.body)
                     response.status(200);
-                    response.json(req.body);
+                    response.json(this.#container.getItemByID(req.params.id));
                 }
             }
             else{
@@ -64,49 +62,27 @@ class productControllerClass{
             response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
         }
     }
-    controllerGetAmmountOfProducts(req, response){
+    controllerPostProduct = (req, response) => {
         try{
-            //response.sendStatus(200) just sends status code
-            response.status(200);    
-            response.send(this.#container.getLength().toString());
-        }
-        catch{
-            response.status(500); //just sends status code
-            response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
-        }
-    }
-    controllerGetRandomProduct(req, response){
-        try{
-            //response.sendStatus(200) just sends status code
-            response.status(200);    
-            response.json(this.#container.getRandomProduct());
-        }
-        catch{
-            response.status(500); //just sends status code
-            response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
-        }
-    }
-    controllerPostProduct(req, response){
-        try{
-            this.#container.save(req.body)
-            //response.sendStatus(200) just sends status code
+            let newProduct = new Product(req.body.title, req.body.price, req.body.thumbnail);
+            this.#container.save(newProduct)
             response.status(200);
             response.json({mensaje: `el item ${req.body.title} fue agregado.`}) 
         }
         catch{
-            response.status(500); //just sends status code
+            response.status(500);
             response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
         }
     }
-    controllerDeleteProductByID(req, response){
+    controllerDeleteProductByID = (req, response) => {
         try{
-            if(+req.params.id){
-                if(!this.#container.getById(+req.params.id)){
+            if(req.params.id){
+                if(!this.#container.getItemByID(req.params.id)){
                     response.status(404);      
                     response.json({ mensaje: `no se encontró el producto con el id ${req.params.id}` });
                 } 
                 else{   
-                    this.#container.deleteById(req.params.id);
+                    this.#container.deleteItemByID(req.params.id);
                     response.status(200);    
                     response.json({mensaje: `el item con el id ${req.params.id} fue eliminado.`}) 
                 }
@@ -122,6 +98,6 @@ class productControllerClass{
         }
     }
 }
-const productController = new productControllerClass
+const productController = new productControllerClass();
 Object.freeze(productController);
 export default productController;
