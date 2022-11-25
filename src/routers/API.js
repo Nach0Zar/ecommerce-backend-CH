@@ -9,7 +9,7 @@ function checkAdminStatus(req, res, next) {
         next();
     } else {
         res.status(403);
-        res.json({ error : -1, descripcion: "usuario no autorizado"})
+        res.json({ error : -1, mensaje: "usuario no autorizado"})
     }
 }
 routerAPI.post('/login', (req, res) => {
@@ -32,4 +32,8 @@ routerAPI.post('/shoppingcart', checkAdminStatus, cartController.controllerPostC
 routerAPI.post('/shoppingcart/:id_cart/products', checkAdminStatus, cartController.controllerPostProductToCart);
 routerAPI.delete('/shoppingcart/:id_cart', checkAdminStatus, cartController.controllerDeleteAllProductsFromCart);
 routerAPI.delete('/shoppingcart/:id_cart/products/:id_prod', checkAdminStatus, cartController.controllerDeleteProductFromCartByID)
+//not Implemented
+routerAPI.all('*', (req, res) => {
+    res.status(404).json({error:-2, mensaje: "Ruta no implementada"})
+})
 export default routerAPI;
