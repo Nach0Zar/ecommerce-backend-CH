@@ -1,4 +1,4 @@
-import { mongoDatabase } from '../db/mongoClient.js';
+import { mongoDatabase } from '../../db/mongoClient.js';
 
 class MongoDBContainer extends container {
 

@@ -1,8 +1,8 @@
 import fs from 'fs';
 import { Container } from './container';
 import * as url from 'url';
-import Product from "../daos/product.js";
-import Cart from "../daos/cart.js";
+import Product from "../classes/product.js";
+import Cart from "../classes/cart.js";
 
 class MemoryFSContainer extends Container{
     constructor(dataType){

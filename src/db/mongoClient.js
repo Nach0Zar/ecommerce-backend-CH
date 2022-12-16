@@ -1,5 +1,5 @@
 import { MongoClient } from 'mongodb';
-import { CNX_STR, DB_NAME } from '.config/config.js';
+import { CNX_STR, DB_NAME } from './config/config.js';
 
 
 const mongoClient = new MongoClient(CNX_STR);
