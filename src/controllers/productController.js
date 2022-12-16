@@ -1,5 +1,5 @@
 import productContainer from '../models/productContainer.js';
-import Product from '../models/product.js';
+import Product from '../models/DAOs/product.js';
 class productControllerClass{
     #container
     constructor(){
