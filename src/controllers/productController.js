@@ -59,7 +59,7 @@ class productControllerClass{
                     response.json({ mensaje: `no se encontró el producto con el id ${req.params.id}` });
                 }
                 else{
-                    this.#container.modifyProductByID(req.params.id, req.body)
+                    this.#container.modifyByID(req.params.id, req.body);
                     response.status(200);
                     response.json(this.#container.getItemByID(req.params.id));
                 }
@@ -94,7 +94,7 @@ class productControllerClass{
                     response.json({ mensaje: `no se encontró el producto con el id ${req.params.id}` });
                 } 
                 else{   
-                    this.#container.deleteItemByID(req.params.id);
+                    this.#container.deleteByID(req.params.id);
                     response.status(200);    
                     response.json({mensaje: `el item con el id ${req.params.id} fue eliminado.`}) 
                 }
