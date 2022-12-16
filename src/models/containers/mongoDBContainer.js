@@ -1,6 +1,6 @@
 import { mongoDatabase } from '../../db/mongoClient.js';
-
-class MongoDBContainer extends container {
+import Container from './container.js';
+class MongoDBContainer extends Container {
 
     constructor(dataType) {
         super(dataType);

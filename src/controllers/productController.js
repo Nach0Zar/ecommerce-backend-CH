@@ -1,8 +1,8 @@
 import Product from '../models/classes/product.js';
 import { PERSISTENCIA } from '../db/config/config.js';
-import FirestoreContainer from '../models/firestoreContainer.js';
-import MongoDBContainer from '../models/mongoDBContainer.js';
-import MemoryFSContainer from '../models/MemoryFSContainer.js';
+import FirestoreContainer from '../models/containers/firestoreContainer.js';
+import MongoDBContainer from '../models/containers/mongoDBContainer.js';
+import MemoryFSContainer from '../models/containers/MemoryFSContainer.js';
 class productControllerClass{
     #container
     constructor(){
@@ -15,6 +15,7 @@ class productControllerClass{
                 break
             default:
                 this.#container = new MemoryFSContainer("products")
+                break
         }
     }
     controllerGetAllProducts = (req, response) => {
@@ -108,6 +109,9 @@ class productControllerClass{
             response.status(500);      
             response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
         }
+    }
+    getContainer(){
+        return this.#container;
     }
 }
 const productController = new productControllerClass();

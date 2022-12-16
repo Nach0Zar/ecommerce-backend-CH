@@ -1,4 +1,4 @@
-export class Container{
+class Container{
     constructor(dataType){
         this.dataType = dataType;
     }
@@ -6,3 +6,5 @@ export class Container{
     getAllItems(){}
     getItemByID(idItem){}
 }
+
+export default Container;
