@@ -1,9 +1,21 @@
-import productContainer from '../models/productContainer.js';
 import Product from '../models/DAOs/product.js';
+import { PERSISTENCIA } from '../db/config/config.js';
+import FirestoreContainer from '../models/firestoreContainer.js';
+import MongoDBContainer from '../models/mongoDBContainer.js';
+import MemoryFSContainer from '../models/MemoryFSContainer.js';
 class productControllerClass{
     #container
     constructor(){
-        this.#container = productContainer;
+        switch (PERSISTENCIA) {
+            case 'mongodb': 
+                this.#container = new MongoDBContainer("products")
+                break
+            case 'firestore':
+                this.#container = new FirestoreContainer("products")
+                break
+            default:
+                this.#container = new MemoryFSContainer("products")
+        }
     }
     controllerGetAllProducts = (req, response) => {
         try{

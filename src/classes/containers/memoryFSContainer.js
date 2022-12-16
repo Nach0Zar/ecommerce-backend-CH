@@ -1,8 +1,8 @@
 import fs from 'fs';
 import { Container } from './container';
 import * as url from 'url';
-import Product from "./DAOs/product.js";
-import Cart from "./cart.js";
+import Product from "../daos/product.js";
+import Cart from "../daos/cart.js";
 
 class MemoryFSContainer extends Container{
     constructor(dataType){
@@ -66,6 +66,16 @@ class MemoryFSContainer extends Container{
         //creates a new array (with the map function) containing only the IDs from the list of items, then indexes by ID and returns the item or null if the index was -1
         let index = this.items.map((item => item.id)).indexOf(idItem);
         return (index !== -1) ? this.items[index] : null;
+    }
+    async modifyByID(){
+        let index = this.items.map((item => item.id)).indexOf(idItem);
+        this.items[index].modify(newItemParam);
+        await this.saveDataOnFile();
+    }
+    async deleteByID(idItem){
+        let index = this.items.map((item => item.id)).indexOf(idItem);
+        (index !== -1) && this.items.splice(index,1);
+        await this.saveDataOnFile();
     }
 }
 export default MemoryFSContainer;

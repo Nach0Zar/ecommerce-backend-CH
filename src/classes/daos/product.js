@@ -34,10 +34,10 @@ class Product{
     setID(id){
         this.id = id;
     }
-    modifyProduct(title, price, thumbnail){
-        this.setTitle(title);
-        this.setPrice(price);
-        this.setThumbnail(thumbnail);
+    modify(item){
+        this.setTitle(item.title);
+        this.setPrice(item.price);
+        this.setThumbnail(item.thumbnail);
     }
 }
 export default Product;

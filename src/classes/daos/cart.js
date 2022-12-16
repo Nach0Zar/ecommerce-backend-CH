@@ -35,5 +35,8 @@ class Cart{
         }
         return false;
     }
+    modify(products){
+        this.products = products;
+    }
 }
 export default Cart;
