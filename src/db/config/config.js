@@ -4,4 +4,4 @@ export const CNX_STR = cnxStrLocal
 
 export const DB_NAME = 'coderhouse'
 //persistencia en mongodb, firebase o memoria/fs
-export const PERSISTENCIA = 'mongodb'
+export const PERSISTENCIA = 'memoria/fs'

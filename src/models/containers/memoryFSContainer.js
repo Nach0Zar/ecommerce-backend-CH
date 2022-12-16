@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { Container } from './container';
+import Container from './container.js';
 import * as url from 'url';
 import Product from "../classes/product.js";
 import Cart from "../classes/cart.js";
@@ -7,25 +7,26 @@ import Cart from "../classes/cart.js";
 class MemoryFSContainer extends Container{
     constructor(dataType){
         super(dataType);
-        this.filePath = url.fileURLToPath(new URL('.', import.meta.url))+"../"+dataType+".txt";
+        this.items = []
+        this.filePath = url.fileURLToPath(new URL('.', import.meta.url))+"../../"+dataType+".txt";
         this.fs = fs;
         //if file exists and it is not empty
         if(dataType === "carts"){
             if(this.fs.existsSync(this.filePath) && this.fs.readFileSync(this.filePath,'utf8').length > 0){
                 //loads previous items to the list
-                    let list = JSON.parse(this.fs.readFileSync(this.filePath,'utf8'));
-                    list.forEach(cart => {
-                        let productParsed = [];
-                        cart.products.forEach(listedProduct => {
-                            let product = new Product(listedProduct.title, listedProduct.price, listedProduct.thumbnail);
-                            product.setID(listedProduct.id);
-                            productParsed.push(product);
-                        });
-                        let cartParsed = new Cart(productParsed);
-                        cartParsed.setID(cart.id)
-                        this.items.push(cartParsed);
-                    })
-                }
+                let list = JSON.parse(this.fs.readFileSync(this.filePath,'utf8'));
+                list.forEach(cart => {
+                    let productParsed = [];
+                    cart.products.forEach(listedProduct => {
+                        let product = new Product(listedProduct.title, listedProduct.price, listedProduct.thumbnail);
+                        product.setID(listedProduct.id);
+                        productParsed.push(product);
+                    });
+                    let cartParsed = new Cart(productParsed);
+                    cartParsed.setID(cart.id)
+                    this.items.push(cartParsed);
+                })
+            }
         }
         else if(dataType === "products"){
             //if file exists and it is not empty
@@ -67,7 +68,7 @@ class MemoryFSContainer extends Container{
         let index = this.items.map((item => item.id)).indexOf(idItem);
         return (index !== -1) ? this.items[index] : null;
     }
-    async modifyByID(){
+    async modifyByID(idItem, newItemParam){
         let index = this.items.map((item => item.id)).indexOf(idItem);
         this.items[index].modify(newItemParam);
         await this.saveDataOnFile();

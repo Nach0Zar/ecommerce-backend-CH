@@ -1,11 +1,10 @@
-import productContainer from '../models/modelProducts.js'
-import Product from '../models/DAOs/product.js';
-import Cart from '../models/cart.js';
+import Product from '../models/classes/product.js';
+import Cart from '../models/classes/cart.js';
 import { PERSISTENCIA } from '../db/config/config.js';
-import FirestoreContainer from '../models/firestoreContainer.js';
-import MongoDBContainer from '../models/mongoDBContainer.js';
-import MemoryFSContainer from '../models/MemoryFSContainer.js';
-
+import MemoryFSContainer from '../models/containers/MemoryFSContainer.js';
+import FirestoreContainer from '../models/containers/firestoreContainer.js';
+import MongoDBContainer from '../models/containers/mongoDBContainer.js';
+import productController from './productController.js'
 class cartControllerClass{
     #container
     constructor(){
@@ -64,11 +63,10 @@ class cartControllerClass{
                     response.json({ mensaje: `no se encontró el carrito con el id ${req.params.id_cart}` });
                 }
                 else{
-                    let product = productContainer.getItemByID(req.body.id_prod);
+                    let product = productController.getContainer().getItemByID(req.body.id_prod);
                     if(product !== null){
-                        this.#container.getItemByID().addProduct(product);
-                        let cartProducts = this.#container.getAllItems();
-                        cartProducts.push(product);
+                        this.#container.getItemByID(req.params.id_cart).addProduct(product);
+                        let cartProducts = this.#container.getItemByID(req.params.id_cart).getProducts();
                         this.#container.modifyByID(req.params.id_cart, cartProducts);
                         response.status(200);
                         response.json(this.#container.getItemByID(req.params.id_cart));
