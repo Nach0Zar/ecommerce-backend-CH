@@ -1,4 +1,3 @@
-import cartContainer from '../models/modelCarts.js';
 import productContainer from '../models/modelProducts.js'
 import Product from '../models/DAOs/product.js';
 import Cart from '../models/cart.js';
@@ -10,7 +9,16 @@ import MemoryFSContainer from '../models/MemoryFSContainer.js';
 class cartControllerClass{
     #container
     constructor(){
-        this.#container = cartContainer;
+        switch (PERSISTENCIA) {
+            case 'mongodb': 
+                this.#container = new MongoDBContainer("carts")
+                break
+            case 'firestore':
+                this.#container = new FirestoreContainer("carts")
+                break
+            default:
+                this.#container = new MemoryFSContainer("carts")
+        }
     }
     controllerGetCartProducts = (req, response) => {
         try{
@@ -58,7 +66,10 @@ class cartControllerClass{
                 else{
                     let product = productContainer.getItemByID(req.body.id_prod);
                     if(product !== null){
-                        this.#container.addProductToCart(req.params.id_cart, product);
+                        this.#container.getItemByID().addProduct(product);
+                        let cartProducts = this.#container.getAllItems();
+                        cartProducts.push(product);
+                        this.#container.modifyByID(req.params.id_cart, cartProducts);
                         response.status(200);
                         response.json(this.#container.getItemByID(req.params.id_cart));
                     }
@@ -81,7 +92,8 @@ class cartControllerClass{
     controllerDeleteAllProductsFromCart = (req, response) => {
         try{
             if(this.#container.getItemByID(req.params.id_cart)){
-                this.#container.deleteAllProductsInCart(req.params.id_cart);
+                this.#container.getItemByID(req.params.id_cart).addProduct([]);
+                this.#container.modifyByID(req.params.id_cart, []);
                 response.status(200);
                 response.json({mensaje: `el carrito ${req.params.id_cart} fue vaciado.`}) 
             }
@@ -100,7 +112,8 @@ class cartControllerClass{
             if(this.#container.getItemByID(req.params.id_cart)){
                 //check if cart has product with matching id
                 if(this.#container.getItemByID(req.params.id_cart).hasProduct(req.params.id_prod)){
-                    this.#container.deleteProductInCart(req.params.id_cart, req.params.id_prod);
+                    this.#container.getItemByID(req.params.id_cart).deleteProduct(req.params.id_prod);
+                    this.#container.modifyByID(req.params.id_cart, this.#container.getItemByID(req.params.id_cart).getProducts())
                     response.status(200);
                     response.json({mensaje: `el item ${req.params.id_prod} del carrito ${req.params.id_cart} fue eliminado.`}) 
                 
