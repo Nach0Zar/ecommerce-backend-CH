@@ -17,10 +17,21 @@ class Cart{
         return (index !== -1) ? this.products[index] : null;
     }
     getID(){
-        return this.id;
+        //this is due to different id tags in mongodb/firestore/fs
+        if(this._id){
+            return this._id;
+        }
+        else{
+            return this.id;
+        }
     }
     setID(id){
-        this.id = id;
+        if(this._id){
+            this._id = id;
+        }
+        else{
+            this.id = id;
+        }
     }
     addProduct(product){
         this.products.push(product);
@@ -35,8 +46,8 @@ class Cart{
         }
         return false;
     }
-    async modify(products){
-        await this.setProducts(products);
+    async modify(cart){
+        await this.setProducts(cart.products);
     }
 }
 export default Cart;

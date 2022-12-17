@@ -4,7 +4,8 @@ import { PERSISTENCIA } from '../db/config/config.js';
 import MemoryFSContainer from '../models/containers/MemoryFSContainer.js';
 import FirestoreContainer from '../models/containers/firestoreContainer.js';
 import MongoDBContainer from '../models/containers/mongoDBContainer.js';
-import productController from './productController.js'
+import productController from './productController.js';
+import { ObjectID } from 'mongodb';
 class cartControllerClass{
     #container
     constructor(){
@@ -45,7 +46,12 @@ class cartControllerClass{
             let productListParsed = [];
             req.body.products.forEach(listedProduct => {
                     let product = new Product(listedProduct.title, listedProduct.price, listedProduct.thumbnail);
-                    product.setID(listedProduct.id);
+                    if(listedProduct._id){
+                        product.setID(ObjectID(listedProduct._id));
+                    }
+                    else{
+                        product.setID(listedProduct.id);
+                    }
                     productListParsed.push(product);
             });
             let newCart = new Cart(productListParsed);
@@ -71,15 +77,20 @@ class cartControllerClass{
                         response.json({ mensaje: `no se encontró el carrito con el id ${req.params.id_cart}` });
                     }
                     else{
-                        productController.getContainer().getItemByID(req.body.id_prod).then((product)=>{
-                        if(product !== null){
-                            this.#container.getItemByID(req.params.id_cart).then((cart)=>{
-                                cart.addProduct(product);
-                                let cartProducts = cart.getProducts();
-                                this.#container.modifyByID(req.params.id_cart, cartProducts).then(()=>{
-                                    this.#container.getItemByID(req.params.id_cart).then((cart)=>{
-                                        response.status(200);
-                                        response.json(cart);
+                        productController.getContainer().getItemByID(req.body.id_prod)
+                        .then((product)=>{
+                            if(product !== null){
+                                this.#container.getItemByID(req.params.id_cart).then((cart)=>{
+                                    let cartItem = new Cart(cart.products);
+                                    cartItem.addProduct(product);
+                                    this.#container.modifyByID(req.params.id_cart, cartItem).then(()=>{
+                                        this.#container.getItemByID(req.params.id_cart).then((cartUpdated)=>{
+                                            response.status(200);
+                                            response.json(cartUpdated.products);
+                                        }).catch(()=>{
+                                            response.status(500);      
+                                            response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
+                                        });
                                     }).catch(()=>{
                                         response.status(500);      
                                         response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
@@ -88,19 +99,15 @@ class cartControllerClass{
                                     response.status(500);      
                                     response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
                                 });
-                            }).catch(()=>{
-                                response.status(500);      
-                                response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
-                            });
-                        }
-                        else{    
+                            }
+                            else{    
+                                response.status(404);      
+                                response.json({ mensaje: `no se encontró el item con el id ${req.body.id_prod}` });
+                            }
+                        }).catch(()=>{
                             response.status(404);      
                             response.json({ mensaje: `no se encontró el item con el id ${req.body.id_prod}` });
-                        }
-                    }).catch(()=>{
-                        response.status(500);      
-                        response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
-                    });
+                        });
                     }
                 }).catch(()=>{
                     response.status(500);      
@@ -121,12 +128,11 @@ class cartControllerClass{
         try{
             this.#container.getItemByID(req.params.id_cart).then((cart)=>{
                 if(cart){
-                    cart.addProduct([]);
-                    this.#container.modifyByID(req.params.id_cart, []).then(()=>{
+                    this.#container.modifyByID(req.params.id_cart, {products: []}).then(()=>{
                         response.status(200);
                         response.json({mensaje: `el carrito ${req.params.id_cart} fue vaciado.`}) 
                     }).catch(()=>{
-                        response.status(500);
+                        response.status(502);
                         response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
                     });
                 }
@@ -135,8 +141,8 @@ class cartControllerClass{
                     response.json({ mensaje: `no se encontró el carrito con el id ${req.params.id_cart}` });
                 }
             }).catch(()=>{
-                response.status(500);
-                response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
+                response.status(404);      
+                response.json({ mensaje: `no se encontró el carrito con el id ${req.params.id_cart}` });
             });
         }
         catch{
