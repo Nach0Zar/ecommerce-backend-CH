@@ -72,18 +72,14 @@ class cartControllerClass{
                     }
                     else{
                         productController.getContainer().getItemByID(req.body.id_prod).then((product)=>{
-                            if(product !== null){
-                                this.#container.getItemByID(req.params.id_cart).then((cart)=>{
-                                    cart.addProduct(product);
-                                    let cartProducts = cart.getProducts();
-                                    this.#container.modifyByID(req.params.id_cart, cartProducts).then(()=>{
-                                        this.#container.getItemByID(req.params.id_cart).then((cart)=>{
-                                            response.status(200);
-                                            response.json(cart);
-                                        }).catch(()=>{
-                                            response.status(500);      
-                                            response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
-                                        });
+                        if(product !== null){
+                            this.#container.getItemByID(req.params.id_cart).then((cart)=>{
+                                cart.addProduct(product);
+                                let cartProducts = cart.getProducts();
+                                this.#container.modifyByID(req.params.id_cart, cartProducts).then(()=>{
+                                    this.#container.getItemByID(req.params.id_cart).then((cart)=>{
+                                        response.status(200);
+                                        response.json(cart);
                                     }).catch(()=>{
                                         response.status(500);      
                                         response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
@@ -92,15 +88,19 @@ class cartControllerClass{
                                     response.status(500);      
                                     response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
                                 });
-                            }
-                            else{    
-                                response.status(404);      
-                                response.json({ mensaje: `no se encontró el item con el id ${req.body.id_prod}` });
-                            }
-                        }).catch(()=>{
-                            response.status(500);      
-                            response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
-                        });
+                            }).catch(()=>{
+                                response.status(500);      
+                                response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
+                            });
+                        }
+                        else{    
+                            response.status(404);      
+                            response.json({ mensaje: `no se encontró el item con el id ${req.body.id_prod}` });
+                        }
+                    }).catch(()=>{
+                        response.status(500);      
+                        response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
+                    });
                     }
                 }).catch(()=>{
                     response.status(500);      

@@ -35,8 +35,8 @@ class Cart{
         }
         return false;
     }
-    modify(item){
-        setProducts(item.products);
+    async modify(products){
+        await this.setProducts(products);
     }
 }
 export default Cart;
