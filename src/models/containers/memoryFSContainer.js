@@ -77,7 +77,7 @@ class MemoryFSContainer extends Container{
     }
     async modifyByID(idItem, newItemParam){
         let index = this.items.map((item => item.id)).indexOf(idItem);
-        this.items[index].modify(newItemParam);
+        await this.items[index].modify(newItemParam);
         let changed = await this.saveDataOnFile();
         return changed;
     }
