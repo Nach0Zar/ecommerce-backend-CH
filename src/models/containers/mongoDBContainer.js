@@ -1,5 +1,6 @@
 import { mongoDatabase } from '../../db/mongoClient.js';
 import Container from './container.js';
+import { ObjectID } from 'mongodb'
 class MongoDBContainer extends Container {
 
     constructor(dataType) {
@@ -8,25 +9,34 @@ class MongoDBContainer extends Container {
     }
 
     async save(object) {
+        delete object.id;//removes the object ID
         await this.items.insertOne(object)
     }
 
-    async getItemByID(itemID) {
-        let criterio = { id: itemID };
-        return await this.items.find(criterio).toArray();
+    async getItemByID(idItem) {
+        let criterio = { _id: ObjectID(idItem) };
+        let item = await this.items.find(criterio).toArray();
+        if(!item.toString()){//to check if no doc was found
+            item = null;
+        }
+        return item
     }
     async getAllItems(){
-        return await this.items.find({}).toArray();
+        let item = await this.items.find({}).toArray();
+        if(!item.toString()){//to check if no doc was found
+            item = null;
+        }
+        return item
     }
     async modifyByID(idItem, newItemParam){
-        let index = this.items.map((item => item.id)).indexOf(idItem);
-        this.items[index].modify(newItemParam);
-        await this.saveDataOnFile();
+        delete newItemParam.id;
+        let query = await this.items.updateOne({ _id: ObjectID(idItem) }, { $set: newItemParam });
+        return (query.modifiedCount > 0);
     }
     async deleteByID(idItem){
-        let index = this.items.map((item => item.id)).indexOf(idItem);
-        (index !== -1) && this.items.splice(index,1);
-        await this.saveDataOnFile();
+        let criterio = { _id: ObjectID(idItem) };
+        let query = await this.items.deleteOne(criterio);
+        return (query.deletedCount > 0);
     }
 }
 export default MongoDBContainer;

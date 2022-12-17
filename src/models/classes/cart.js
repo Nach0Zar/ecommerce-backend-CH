@@ -35,8 +35,8 @@ class Cart{
         }
         return false;
     }
-    modify(products){
-        this.products = products;
+    modify(item){
+        setProducts(item.products);
     }
 }
 export default Cart;
