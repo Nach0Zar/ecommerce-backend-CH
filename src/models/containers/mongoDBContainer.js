@@ -19,7 +19,7 @@ class MongoDBContainer extends Container {
         if(!item.toString()){//to check if no doc was found
             item = null;
         }
-        return item
+        return (item[0])
     }
     async getAllItems(){
         let item = await this.items.find({}).toArray();
