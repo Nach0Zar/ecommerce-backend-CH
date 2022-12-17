@@ -20,10 +20,14 @@ class productControllerClass{
     }
     controllerGetAllProducts = (req, response) => {
         try{
-            this.#container.getAllItems().then((data)=>{
+            this.#container.getAllItems()
+            .then((data)=>{
                 response.status(200);
                 response.json(data);
-            })
+            }).catch(()=>{
+                response.status(500);      
+                response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
+            });
         }
         catch{
             response.status(500);      
@@ -33,15 +37,20 @@ class productControllerClass{
     controllerGetProductByID = (req, response) => {
         try{
             if(req.params.id){
-                const item = this.#container.getItemByID(req.params.id);
-                if(!item){    
-                    response.status(404);      
-                    response.json({ mensaje: `no se encontró el producto con el id ${req.params.id}` });
-                }
-                else{
-                    response.status(200);
-                    response.json(item);
-                }
+                this.#container.getItemByID(req.params.id)
+                .then((item)=>{
+                    if(!item){    
+                        response.status(404);      
+                        response.json({ mensaje: `no se encontró el producto con el id ${req.params.id}` });
+                    }
+                    else{
+                        response.status(200);
+                        response.json(item);
+                    }
+                }).catch(()=>{
+                    response.status(500);      
+                    response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
+                })
             }
             else{
                 response.status(404);      
@@ -56,16 +65,32 @@ class productControllerClass{
     controllerPutProductByID = (req, response) => {
         try{
             if(req.params.id){
-                const item = this.#container.getItemByID(req.params.id);
-                if(!item){    
-                    response.status(404);      
-                    response.json({ mensaje: `no se encontró el producto con el id ${req.params.id}` });
-                }
-                else{
-                    this.#container.modifyByID(req.params.id, req.body);
-                    response.status(200);
-                    response.json(this.#container.getItemByID(req.params.id));
-                }
+                this.#container.getItemByID(req.params.id)
+                .then((item)=>{
+                    if(!item){    
+                        response.status(404);      
+                        response.json({ mensaje: `no se encontró el producto con el id ${req.params.id}` });
+                    }
+                    else{
+                        this.#container.modifyByID(req.params.id, req.body)
+                        .then(()=>{
+                            this.#container.getItemByID(req.params.id)
+                            .then((item)=>{
+                                response.status(200);
+                                response.json(item);
+                            }).catch(()=>{
+                                response.status(500);      
+                                response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
+                            });
+                        }).catch(()=>{
+                            response.status(500);      
+                            response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
+                        });
+                    }
+                }).catch(()=>{
+                    response.status(500);      
+                    response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
+                })
             }
             else{
                 response.status(404);      
@@ -80,9 +105,13 @@ class productControllerClass{
     controllerPostProduct = (req, response) => {
         try{
             let newProduct = new Product(req.body.title, req.body.price, req.body.thumbnail);
-            this.#container.save(newProduct)
-            response.status(200);
-            response.json({mensaje: `el item ${req.body.title} fue agregado.`}) 
+            this.#container.save(newProduct).then(()=>{
+                response.status(200);
+                response.json({mensaje: `el item ${req.body.title} fue agregado.`}) 
+            }).catch(()=>{
+                response.status(500);
+                response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
+            })
         }
         catch{
             response.status(500);
@@ -92,15 +121,24 @@ class productControllerClass{
     controllerDeleteProductByID = (req, response) => {
         try{
             if(req.params.id){
-                if(!this.#container.getItemByID(req.params.id)){
-                    response.status(404);      
-                    response.json({ mensaje: `no se encontró el producto con el id ${req.params.id}` });
-                } 
-                else{   
-                    this.#container.deleteByID(req.params.id);
-                    response.status(200);    
-                    response.json({mensaje: `el item con el id ${req.params.id} fue eliminado.`}) 
-                }
+                this.#container.getItemByID(req.params.id).then((item)=>{
+                    if(!item){
+                        response.status(404);      
+                        response.json({ mensaje: `no se encontró el producto con el id ${req.params.id}` });
+                    } 
+                    else{   
+                        this.#container.deleteByID(req.params.id).then(()=>{
+                            response.status(200);    
+                            response.json({mensaje: `el item con el id ${req.params.id} fue eliminado.`})
+                        }).catch(()=>{
+                            response.status(500);      
+                            response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
+                        });
+                    }
+                }).catch(()=>{
+                    response.status(500);      
+                    response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
+                });
             }
             else{
                 response.status(404);      

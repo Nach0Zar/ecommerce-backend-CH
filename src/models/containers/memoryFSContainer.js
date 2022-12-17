@@ -42,17 +42,17 @@ class MemoryFSContainer extends Container{
         }
     }
     async deleteFile(){
-        this.fs.promises.unlink(this.filePath)
+        await this.fs.promises.unlink(this.filePath)
         .then(()=>console.log("Información eliminada!"))
         .catch(()=>console.log("El archivo no fue encontrado"));
     }
     async writeData(stringToWrite){
-        this.fs.promises.writeFile(this.filePath,stringToWrite)
+        await this.fs.promises.writeFile(this.filePath,stringToWrite)
         .then(()=>console.log("Información guardada!"))
         .catch(()=>console.log("Falló la carga de información"));
     }
     async saveDataOnFile(){
-        this.deleteFile()
+        await this.deleteFile()
         .then(()=>this.writeData(JSON.stringify(this.items)))
         .catch(()=>console.log("Falló el borrado de archivo"));
     }
