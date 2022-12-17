@@ -60,10 +60,10 @@ class MemoryFSContainer extends Container{
         this.items.push(object);
         await this.saveDataOnFile();
     }
-    getAllItems(){
+    async getAllItems(){
         return this.items;
     }
-    getItemByID(idItem){
+    async getItemByID(idItem){
         //creates a new array (with the map function) containing only the IDs from the list of items, then indexes by ID and returns the item or null if the index was -1
         let index = this.items.map((item => item.id)).indexOf(idItem);
         return (index !== -1) ? this.items[index] : null;

@@ -20,8 +20,10 @@ class productControllerClass{
     }
     controllerGetAllProducts = (req, response) => {
         try{
-            response.status(200);
-            response.json(this.#container.getAllItems());
+            this.#container.getAllItems().then((data)=>{
+                response.status(200);
+                response.json(data);
+            })
         }
         catch{
             response.status(500);      
