@@ -52,13 +52,20 @@ class MemoryFSContainer extends Container{
         .catch(()=>console.log("Falló la carga de información"));
     }
     async saveDataOnFile(){
+        let fileChange;
         await this.deleteFile()
-        .then(()=>this.writeData(JSON.stringify(this.items)))
-        .catch(()=>console.log("Falló el borrado de archivo"));
+        .then(async ()=>{
+            await this.writeData(JSON.stringify(this.items))
+            fileChange = true
+        }).catch(()=>{
+            console.log("Falló el borrado de archivo");
+            fileChange = false
+        });
+        return fileChange;
     }
     async save(object){
         this.items.push(object);
-        await this.saveDataOnFile();
+        return await this.saveDataOnFile();
     }
     async getAllItems(){
         return this.items;
@@ -71,12 +78,13 @@ class MemoryFSContainer extends Container{
     async modifyByID(idItem, newItemParam){
         let index = this.items.map((item => item.id)).indexOf(idItem);
         this.items[index].modify(newItemParam);
-        await this.saveDataOnFile();
+        let changed = await this.saveDataOnFile();
+        return changed;
     }
     async deleteByID(idItem){
         let index = this.items.map((item => item.id)).indexOf(idItem);
         (index !== -1) && this.items.splice(index,1);
-        await this.saveDataOnFile();
+        return await this.saveDataOnFile();
     }
 }
 export default MemoryFSContainer;

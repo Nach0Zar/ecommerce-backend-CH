@@ -22,8 +22,14 @@ class productControllerClass{
         try{
             this.#container.getAllItems()
             .then((data)=>{
-                response.status(200);
-                response.json(data);
+                if(!data){
+                    response.status(404);      
+                    response.json({ mensaje: `No se registran productos cargados.` });
+                }
+                else{
+                    response.status(200);
+                    response.json(data);
+                }
             }).catch(()=>{
                 response.status(500);      
                 response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
@@ -48,8 +54,8 @@ class productControllerClass{
                         response.json(item);
                     }
                 }).catch(()=>{
-                    response.status(500);      
-                    response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
+                    response.status(404);      
+                    response.json({ mensaje: `el id ${req.params.id} es inválido` });
                 })
             }
             else{
@@ -73,23 +79,29 @@ class productControllerClass{
                     }
                     else{
                         this.#container.modifyByID(req.params.id, req.body)
-                        .then(()=>{
-                            this.#container.getItemByID(req.params.id)
-                            .then((item)=>{
-                                response.status(200);
-                                response.json(item);
-                            }).catch(()=>{
+                        .then((changed)=>{
+                            if(changed){
+                                this.#container.getItemByID(req.params.id)
+                                .then((item)=>{
+                                    response.status(200);
+                                    response.json(item);
+                                }).catch(()=>{
+                                    response.status(500);      
+                                    response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
+                                });
+                            }
+                            else{
                                 response.status(500);      
-                                response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
-                            });
+                                response.json({ mensaje: `Ningun elemento fue cambiado.` });
+                            }
                         }).catch(()=>{
                             response.status(500);      
                             response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
                         });
                     }
                 }).catch(()=>{
-                    response.status(500);      
-                    response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
+                    response.status(404);      
+                    response.json({ mensaje: `el id ${req.params.id} es inválido` });
                 })
             }
             else{
@@ -127,17 +139,23 @@ class productControllerClass{
                         response.json({ mensaje: `no se encontró el producto con el id ${req.params.id}` });
                     } 
                     else{   
-                        this.#container.deleteByID(req.params.id).then(()=>{
-                            response.status(200);    
-                            response.json({mensaje: `el item con el id ${req.params.id} fue eliminado.`})
+                        this.#container.deleteByID(req.params.id).then((deleted)=>{
+                            if(deleted){
+                                response.status(200);    
+                                response.json({mensaje: `el item con el id ${req.params.id} fue eliminado.`})
+                            }
+                            else{
+                                response.status(500);    
+                                response.json({mensaje: `el item con el id ${req.params.id} no fue eliminado.`})
+                            }
                         }).catch(()=>{
                             response.status(500);      
                             response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
                         });
                     }
                 }).catch(()=>{
-                    response.status(500);      
-                    response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
+                    response.status(404);      
+                    response.json({ mensaje: `no se encontró el producto con el id ${req.params.id}` });
                 });
             }
             else{
