@@ -50,8 +50,9 @@ class productControllerClass{
                         response.json({ mensaje: `no se encontró el producto con el id ${req.params.id}` });
                     }
                     else{
+                        let product = new Product(item.title, item.price, item.thumbnail, item._id)
                         response.status(200);
-                        response.json(item);
+                        response.json(product);
                     }
                 }).catch(()=>{
                     response.status(404);      

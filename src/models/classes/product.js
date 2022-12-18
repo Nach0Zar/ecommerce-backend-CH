@@ -4,11 +4,11 @@ class Product{
     price
     thumbnail
     id
-    constructor(title, price, thumbnail){
+    constructor(title, price, thumbnail, id = randomUUID()){
         this.title = title
         this.price = +price
         this.thumbnail = thumbnail
-        this.id = randomUUID();
+        this.id = id;
     }
     getTitle(){
         return this.title;

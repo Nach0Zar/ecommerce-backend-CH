@@ -10,14 +10,14 @@ class MongoDBContainer extends Container {
 
     async save(object) {
         delete object.id;//removes the object ID
-        await this.items.insertOne(object)
+        return (await this.items.insertOne(object)).insertedId.toString()
     }
 
     async getItemByID(idItem) {
         let criterio = { _id: ObjectID(idItem) };
         let item = await this.items.find(criterio).toArray();
         if(!item.toString()){//to check if no doc was found
-            item = null;
+            return null;
         }
         return (item[0])
     }

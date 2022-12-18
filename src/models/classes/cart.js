@@ -1,10 +1,11 @@
 import { randomUUID } from 'crypto';
+import { ObjectID } from 'mongodb';
 class Cart{
     id
     products
-    constructor(products){
+    constructor(products, id = randomUUID()){
         this.products = products;
-        this.id = randomUUID();
+        this.id = id;
     }
     getProducts(){
         return this.products;
@@ -12,38 +13,32 @@ class Cart{
     setProducts(products){
         this.products = products;
     }
-    getProductByID(idItem){
-        let index = this.products.map((item => item.id)).indexOf(idItem);
-        return (index !== -1) ? this.products[index] : null;
-    }
     getID(){
-        //this is due to different id tags in mongodb/firestore/fs
-        if(this._id){
-            return this._id;
-        }
-        else{
-            return this.id;
-        }
+        return this.id;
     }
     setID(id){
-        if(this._id){
-            this._id = id;
-        }
-        else{
-            this.id = id;
-        }
+        this.id = id;
     }
     addProduct(product){
         this.products.push(product);
     }
     deleteProduct(productID){
-        let index = this.products.map((item => item.id)).indexOf(productID);
+        let index = -1;
+        let i = 0;
+        while(i < this.products.length && index === -1){
+            if(this.products[i].id === productID || (this.products[i]._id).toString() === productID){//in case of using mongodb, the product has _id and is ObjectID type, so it must be parsed to be matched
+                index = i;
+            }
+            i++;
+        };
         (index !== -1) && this.products.splice(index,1);
     }
     hasProduct(idItem){
-        if(this.getProductByID(idItem) !== null){
-            return true;
-        }
+        for(let product of this.products){
+            if(product.id === idItem || (product._id).toString() === idItem){//in case of using mongodb, the product has _id and is ObjectID type, so it must be parsed to be matched
+                return true;
+            }
+        };
         return false;
     }
     async modify(cart){

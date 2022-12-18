@@ -18,8 +18,7 @@ class MemoryFSContainer extends Container{
                 list.forEach(cart => {
                     let productParsed = [];
                     cart.products.forEach(listedProduct => {
-                        let product = new Product(listedProduct.title, listedProduct.price, listedProduct.thumbnail);
-                        product.setID(listedProduct.id);
+                        let product = new Product(listedProduct.title, listedProduct.price, listedProduct.thumbnail, listedProduct.id);
                         productParsed.push(product);
                     });
                     let cartParsed = new Cart(productParsed);
@@ -34,8 +33,7 @@ class MemoryFSContainer extends Container{
                 //loads previous items to the list
                 let list = JSON.parse(this.fs.readFileSync(this.filePath,'utf8'));
                 list.forEach(listedProduct => {
-                    let product = new Product(listedProduct.title, listedProduct.price, listedProduct.thumbnail);
-                    product.setID(listedProduct.id);
+                    let product = new Product(listedProduct.title, listedProduct.price, listedProduct.thumbnail, listedProduct.id);
                     this.items.push(product);
                 });
             }
@@ -65,7 +63,8 @@ class MemoryFSContainer extends Container{
     }
     async save(object){
         this.items.push(object);
-        return await this.saveDataOnFile();
+        await this.saveDataOnFile();
+        return object.id;
     }
     async getAllItems(){
         return this.items;

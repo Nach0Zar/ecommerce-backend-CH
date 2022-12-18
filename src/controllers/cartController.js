@@ -45,19 +45,13 @@ class cartControllerClass{
         try{
             let productListParsed = [];
             req.body.products.forEach(listedProduct => {
-                    let product = new Product(listedProduct.title, listedProduct.price, listedProduct.thumbnail);
-                    if(listedProduct._id){
-                        product.setID(ObjectID(listedProduct._id));
-                    }
-                    else{
-                        product.setID(listedProduct.id);
-                    }
+                    let product = new Product(listedProduct.title, listedProduct.price, listedProduct.thumbnail, listedProduct.id);
                     productListParsed.push(product);
             });
             let newCart = new Cart(productListParsed);
-            this.#container.save(newCart).then(()=>{
+            this.#container.save(newCart).then((newID)=>{
                 response.status(200);
-                response.json({mensaje: `el carrito ${newCart.getID()} fue agregado.`}) 
+                response.json({mensaje: `el carrito ${newID} fue agregado.`}) 
             }).catch(()=>{
                 response.status(500);
                 response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
@@ -80,8 +74,9 @@ class cartControllerClass{
                         productController.getContainer().getItemByID(req.body.id_prod)
                         .then((product)=>{
                             if(product !== null){
+                                let productCreated = new Product( product.title, product.price, product.thumbnail, req.body.id_prod)
                                 this.#container.getItemByID(req.params.id_cart).then((cart)=>{
-                                    let cartItem = new Cart(cart.products);
+                                    let cartItem = new Cart(cart.products, req.params.id_cart);
                                     cartItem.addProduct(product);
                                     this.#container.modifyByID(req.params.id_cart, cartItem).then(()=>{
                                         this.#container.getItemByID(req.params.id_cart).then((cartUpdated)=>{
@@ -152,12 +147,13 @@ class cartControllerClass{
     }
     controllerDeleteProductFromCartByID = (req, response) => {
         try{
-            this.#container.getItemByID(req.params.id_cart).then((cart)=>{
-                if(cart){
+            this.#container.getItemByID(req.params.id_cart).then((cartFound)=>{
+                if(cartFound){
                     //check if cart has product with matching id
+                    let cart = new Cart(cartFound.products, req.params.id_cart);
                     if(cart.hasProduct(req.params.id_prod)){
                         cart.deleteProduct(req.params.id_prod);
-                        this.#container.modifyByID(req.params.id_cart, cart.getProducts()).then(()=>{
+                        this.#container.modifyByID(req.params.id_cart, { products: cart.getProducts()}).then(()=>{
                             response.status(200);
                             response.json({mensaje: `el item ${req.params.id_prod} del carrito ${req.params.id_cart} fue eliminado.`}) 
                         }).catch(()=>{
