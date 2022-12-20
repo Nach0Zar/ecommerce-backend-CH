@@ -25,7 +25,7 @@ class Cart{
         let index = -1;
         let i = 0;
         while(i < this.products.length && index === -1){
-            if(this.products[i].id === productID){// || (this.products[i]._id).toString() === productID){//in case of using mongodb, the product has _id and is ObjectID type, so it must be parsed to be matched
+            if(this.products[i].id === productID){
                 index = i;
             }
             i++;
@@ -34,7 +34,7 @@ class Cart{
     }
     hasProduct(idItem){
         for(let product of this.products){
-            if(product.id === idItem){ //|| (product._id).toString() === idItem){//in case of using mongodb, the product has _id and is ObjectID type, so it must be parsed to be matched
+            if(product.id === idItem){
                 return true;
             }
         };
