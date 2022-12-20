@@ -5,7 +5,6 @@ import MemoryFSContainer from '../models/containers/MemoryFSContainer.js';
 import FirestoreContainer from '../models/containers/firestoreContainer.js';
 import MongoDBContainer from '../models/containers/mongoDBContainer.js';
 import productController from './productController.js';
-import { ObjectID } from 'mongodb';
 class cartControllerClass{
     #container
     constructor(){
@@ -13,7 +12,7 @@ class cartControllerClass{
             case 'mongodb': 
                 this.#container = new MongoDBContainer("carts")
                 break
-            case 'firestore':
+            case 'firebase':
                 this.#container = new FirestoreContainer("carts")
                 break
             default:

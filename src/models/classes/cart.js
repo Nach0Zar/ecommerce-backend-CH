@@ -1,5 +1,4 @@
 import { randomUUID } from 'crypto';
-import { ObjectID } from 'mongodb';
 class Cart{
     id
     products
@@ -43,6 +42,16 @@ class Cart{
     }
     async modify(cart){
         await this.setProducts(cart.products);
+    }
+    toDTO(){
+        let productsDTO = []
+        this.products.forEach(product => {
+            productsDTO.push(product.toDTO());
+        });
+        const dto = {
+            products: productsDTO
+        }
+        return dto
     }
 }
 export default Cart;
