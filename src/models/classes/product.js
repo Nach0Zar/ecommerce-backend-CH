@@ -29,21 +29,11 @@ class Product{
         this.thumbnail = thumbnail;  
     }
     getID(){
-        //this is due to different id tags in mongodb/firestore/fs
-        if(this._id){
-            return this._id;
-        }
-        else{
-            return this.id;
-        }
+        return this.id;
+        
     }
     setID(id){
-        if(this._id){
-            this._id = id;
-        }
-        else{
-            this.id = id;
-        }
+        this.id = id;
     }
     modify(item){
         this.setTitle(item.title);
