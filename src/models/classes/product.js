@@ -4,11 +4,11 @@ class Product{
     price
     thumbnail
     id
-    constructor(title, price, thumbnail){
+    constructor(title, price, thumbnail, id = randomUUID()){
         this.title = title
         this.price = +price
         this.thumbnail = thumbnail
-        this.id = randomUUID();
+        this.id = id;
     }
     getTitle(){
         return this.title;
@@ -30,14 +30,23 @@ class Product{
     }
     getID(){
         return this.id;
+        
     }
     setID(id){
         this.id = id;
     }
-    modifyProduct(title, price, thumbnail){
-        this.setTitle(title);
-        this.setPrice(price);
-        this.setThumbnail(thumbnail);
+    modify(item){
+        this.setTitle(item.title);
+        this.setPrice(item.price);
+        this.setThumbnail(item.thumbnail);
+    }
+    toDTO(){
+        const dto = {
+            title: this.title,
+            price: this.price,
+            thumbnail: this.thumbnail
+        }
+        return dto
     }
 }
 export default Product;

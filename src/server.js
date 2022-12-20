@@ -1,6 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import routerAPI from "./routers/API.js";
+import routerAPI from "./routers/router.js";
 const app = express();
 //middlewares
 app.use(bodyParser.json());
