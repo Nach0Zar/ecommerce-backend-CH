@@ -10,7 +10,7 @@ class productControllerClass{
             case 'mongodb': 
                 this.#container = new MongoDBContainer("products")
                 break
-            case 'firestore':
+            case 'firebase':
                 this.#container = new FirestoreContainer("products")
                 break
             default:
@@ -50,7 +50,14 @@ class productControllerClass{
                         response.json({ mensaje: `no se encontró el producto con el id ${req.params.id}` });
                     }
                     else{
-                        let product = new Product(item.title, item.price, item.thumbnail, item._id)
+                        let idItem;
+                        if(item._id){
+                            idItem = item._id;
+                        }
+                        else{
+                            idItem = item.id;
+                        }
+                        let product = new Product(item.title, item.price, item.thumbnail, idItem)
                         response.status(200);
                         response.json(product);
                     }

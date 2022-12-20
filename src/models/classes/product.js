@@ -50,5 +50,13 @@ class Product{
         this.setPrice(item.price);
         this.setThumbnail(item.thumbnail);
     }
+    toDTO(){
+        const dto = {
+            title: this.title,
+            price: this.price,
+            thumbnail: this.thumbnail
+        }
+        return dto
+    }
 }
 export default Product;
