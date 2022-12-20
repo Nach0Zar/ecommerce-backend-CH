@@ -75,9 +75,13 @@ class cartControllerClass{
                             if(product !== null){
                                 let productCreated = new Product( product.title, product.price, product.thumbnail, req.body.id_prod)
                                 this.#container.getItemByID(req.params.id_cart).then((cart)=>{
-                                    let cartItem = new Cart(cart.products, req.params.id_cart);
-                                    cartItem.addProduct(product);
-                                    this.#container.modifyByID(req.params.id_cart, cartItem).then(()=>{
+                                    let parsedProducts = []
+                                    cart.products.forEach((listedProduct)=>{
+                                        parsedProducts.push(new Product( listedProduct.title, listedProduct.price, listedProduct.thumbnail, listedProduct.id))
+                                    })
+                                    let cartItem = new Cart(parsedProducts, req.params.id_cart);
+                                    cartItem.addProduct(productCreated);
+                                    this.#container.modifyByID(req.params.id_cart, cartItem.toDTO()).then(()=>{
                                         this.#container.getItemByID(req.params.id_cart).then((cartUpdated)=>{
                                             response.status(200);
                                             response.json(cartUpdated.products);
@@ -86,7 +90,7 @@ class cartControllerClass{
                                             response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
                                         });
                                     }).catch(()=>{
-                                        response.status(500);      
+                                        response.status(501);      
                                         response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
                                     });
                                 }).catch(()=>{
@@ -149,10 +153,14 @@ class cartControllerClass{
             this.#container.getItemByID(req.params.id_cart).then((cartFound)=>{
                 if(cartFound){
                     //check if cart has product with matching id
-                    let cart = new Cart(cartFound.products, req.params.id_cart);
+                    let parsedProducts = []
+                    cartFound.products.forEach((listedProduct)=>{
+                        parsedProducts.push(new Product( listedProduct.title, listedProduct.price, listedProduct.thumbnail, listedProduct.id))
+                    })
+                    let cart = new Cart(parsedProducts, req.params.id_cart);
                     if(cart.hasProduct(req.params.id_prod)){
                         cart.deleteProduct(req.params.id_prod);
-                        this.#container.modifyByID(req.params.id_cart, { products: cart.getProducts()}).then(()=>{
+                        this.#container.modifyByID(req.params.id_cart, cart.toDTO()).then(()=>{
                             response.status(200);
                             response.json({mensaje: `el item ${req.params.id_prod} del carrito ${req.params.id_cart} fue eliminado.`}) 
                         }).catch(()=>{
