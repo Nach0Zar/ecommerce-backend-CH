@@ -1,10 +1,9 @@
 import { mongoDatabase } from '../../db/mongoClient.js';
-import Container from './container.js';
 import { ObjectID } from 'mongodb';
-class MongoDBContainer extends Container {
-    constructor(dataType) {
-        super(dataType);
-        this.items = mongoDatabase.collection(dataType);
+class userContainerDB{
+    constructor() {
+        this.items = mongoDatabase.collection("users");
+        this.items = [];
     }
     async save(object) {
         delete object.id;//removes the object ID
@@ -12,6 +11,14 @@ class MongoDBContainer extends Container {
     }
     async getItemByID(idItem) {
         let criterio = { _id: ObjectID(idItem) };
+        let item = await this.items.find(criterio).toArray();
+        if(!item.toString()){//to check if no doc was found
+            return null;
+        }
+        return (this.parseData(item[0]))
+    }
+    async getItemByEmail(userEmail) {
+        let criterio = { email: userEmail };
         let item = await this.items.find(criterio).toArray();
         if(!item.toString()){//to check if no doc was found
             return null;
@@ -47,4 +54,5 @@ class MongoDBContainer extends Container {
         return data
     }
 }
-export default MongoDBContainer;
+
+export default userContainerDB;
