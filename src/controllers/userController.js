@@ -25,17 +25,17 @@ class userControllerClass{
                 container.getItemByEmail(user.email).then((userFound)=>{
                     if(userFound === null){
                         container.save(user).then(()=>{
-                            res.status(201).redirect('/');
+                            res.status(201)
                         })
                     }
                     else{
-                        res.status(500).redirect('/api/error')
+                        res.status(500)
                     }
                 })
             })
         }
         else{
-            res.status(500).redirect('/api/error')
+            res.status(500)
         }
     }
     loginUser = (req, res) => {
@@ -43,10 +43,10 @@ class userControllerClass{
             container.getItemByEmail(req.body.username).then((item)=>{
                 if(item){
                     res.cookie('email', item.email, {maxAge: 60 * 10 * 1000})
-                    res.status(200).redirect('/')
+                    res.status(200)
                 }
                 else{
-                    res.status(500).redirect('/api/error')
+                    res.status(500)
                 }
             })
         })

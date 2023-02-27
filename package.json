@@ -19,8 +19,10 @@
   },
   "homepage": "https://github.com/Nach0Zar/ecommerce-backend-CH#readme",
   "dependencies": {
+    "cookie-parser": "^1.4.6",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "express-session": "^1.17.3",
     "firebase-admin": "^11.4.0",
     "jsonwebtoken": "^9.0.0",
     "minimist": "^1.2.8",
