@@ -21,6 +21,7 @@ class userControllerClass{
                 firstname: req.body.firstname,
                 lastname: req.body.lastname,
                 email: req.body.username,
+                profileImage: "blank",
                 password: jwt.sign(req.body.password1, config.SESSION.secret)
             }
             this.userContainer.getItemByEmail(user.email).then((userFound)=>{
