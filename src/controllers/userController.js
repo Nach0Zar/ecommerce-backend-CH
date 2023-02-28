@@ -12,45 +12,42 @@ class userControllerClass{
         done(null, user.id);
     }
     deserializeUserMongo = (id, done) => {
-        const user = userContainer.then((container) => container.getItemByID(id))
+        const user = this.userContainer.getItemByID(id)
         done(null, user)
     }
     registerUser = (req, res) => {
-        if(req.body.password1 === req.body.password2){
+        if(req.body.password1 && (req.body.password1 === req.body.password2)){
             const user = {
+                firstname: req.body.firstname,
+                lastname: req.body.lastname,
                 email: req.body.username,
-                password: jwt.sign(req.body.password1, config.SESSION_SECRET)
+                password: jwt.sign(req.body.password1, config.SESSION.secret)
             }
-            userContainer.then((container)=>{
-                container.getItemByEmail(user.email).then((userFound)=>{
-                    if(userFound === null){
-                        container.save(user).then(()=>{
-                            res.status(201)
-                        })
-                    }
-                    else{
-                        res.status(500)
-                    }
-                })
+            this.userContainer.getItemByEmail(user.email).then((userFound)=>{
+                if(userFound === null){
+                    this.userContainer.save(user).then(()=>{
+                        res.sendStatus(201)
+                    })
+                }
+                else{
+                    res.sendStatus(409)
+                }
             })
         }
         else{
-            res.status(500)
+            res.sendStatus(500)
         }
     }
     loginUser = (req, res) => {
-        userContainer.then((container) => {
-            container.getItemByEmail(req.body.username).then((item)=>{
-                if(item){
-                    res.cookie('email', item.email, {maxAge: 60 * 10 * 1000})
-                    res.status(200)
-                }
-                else{
-                    res.status(500)
-                }
-            })
+        this.userContainer.getItemByEmail(req.body.username).then((item)=>{
+            if(item){
+                res.cookie('email', item.email, {maxAge: config.SESSION.EXPIRY_TIME})
+                res.sendStatus(200)
+            }
+            else{
+                res.sendStatus(403)
+            }
         })
-
     }
 }
 
@@ -59,15 +56,13 @@ Object.freeze(userController);
 passport.use('local-login', new LocalStrategy(
     {},
     (username, password, done) => {
-        userContainer.then((container)=> {
-            container.getItemByEmail(username).then((user)=>{
-                const originalPassword = jwt.verify(user?.password, SESSION_SECRET)
-                if (password !== originalPassword) {
-                    return done(null, false)
-                }
-                done(null, user)
-                })
+        userController.userContainer.getItemByEmail(username).then((user)=>{
+            const originalPassword = jwt.verify(user?.password, config.SESSION.secret)
+            if (password !== originalPassword) {
+                return done(null, false)
+            }
+            done(null, user)
             })
-    })
+        })
 )
 export default userController;

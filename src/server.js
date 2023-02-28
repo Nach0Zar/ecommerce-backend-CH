@@ -23,6 +23,10 @@ passport.deserializeUser((id, done) => {
 });
 //routes
 app.use('/api/',routerAPI);
+//not implemented 
+app.all('*', (req, res) => {
+    res.status(404).json({error:-2, mensaje: "Ruta no implementada"})
+})
 //server port listener
 const port = process.env.PORT ?? 8080;
 const server = app.listen(port,()=>{

@@ -14,7 +14,7 @@ function checkUserLoggedStatus(req, res, next) {
     }
 }
 routerAPI.post('/login',
-    passport.authenticate('local-login', { failWithError: true }),
+    passport.authenticate('local-login', { failWithError: false }),
     userController.loginUser);
 routerAPI.post('/register',userController.registerUser);
 routerAPI.post('/logout',(req, res)=>{
@@ -33,8 +33,5 @@ routerAPI.post('/shoppingcart', checkUserLoggedStatus, cartController.controller
 routerAPI.post('/shoppingcart/:id_cart/products', checkUserLoggedStatus, cartController.controllerPostProductToCart);
 routerAPI.delete('/shoppingcart/:id_cart', checkUserLoggedStatus, cartController.controllerDeleteAllProductsFromCart);
 routerAPI.delete('/shoppingcart/:id_cart/products/:id_prod', checkUserLoggedStatus, cartController.controllerDeleteProductFromCartByID)
-//not implemented 
-routerAPI.all('*', (req, res) => {
-    res.status(404).json({error:-2, mensaje: "Ruta no implementada"})
-})
+
 export default routerAPI;
