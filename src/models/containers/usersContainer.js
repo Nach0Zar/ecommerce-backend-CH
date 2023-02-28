@@ -3,7 +3,6 @@ import { ObjectID } from 'mongodb';
 class userContainerDB{
     constructor() {
         this.items = mongoDatabase.collection("users");
-        this.items = [];
     }
     async save(object) {
         delete object.id;//removes the object ID

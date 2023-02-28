@@ -7,6 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({path:path.join(__dirname+'/../.env')});
 const argv = parseArgs(process.argv.slice(2), { alias: { p: 'port', m: 'mode', e: 'env' }, default: { port: 8080, mode: 'fork', env: 'development'} })
+const EXPIRY_TIME = 10000//60 * 10 * 1000
 const sessionConfig = {
     //mongo sessions
     // store: MongoStore.create({
@@ -16,11 +17,12 @@ const sessionConfig = {
     cookie: {
         httpOnly: false,
         secure: false,
-        expires: 60 * 10 * 1000
+        expires: EXPIRY_TIME
     },
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    EXPIRY_TIME: EXPIRY_TIME
 }
 const config = {
     PORT: argv.port,
@@ -37,7 +39,8 @@ const config = {
     mongoRemote: {
         client: 'mongodb',
         dbName: process.env.MONGODB_DBNAME,
-        cnxStr: process.env.MONGODB_CNXSTRING
+        cnxStr: process.env.MONGODB_CNXSTRING,
+        SECRETSTR: process.env.MONGODB_SECRETSTR
     },
     mysql: {
         client: 'mysql2',
