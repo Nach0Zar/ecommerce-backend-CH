@@ -56,6 +56,17 @@ class userControllerClass{
             }
         })
     }
+    controllerGetUserInformation = (req, res) => {
+        this.userContainer.getItemByEmail(req.cookies.email).then((item)=>{
+            if(item){
+                res.json(item)
+                res.status(200)
+            }
+            else{
+                res.sendStatus(403)
+            }
+        })
+    }
 }
 
 const userController = new userControllerClass(new userContainerDB())
@@ -64,11 +75,16 @@ passport.use('local-login', new LocalStrategy(
     {},
     (username, password, done) => {
         userController.userContainer.getItemByEmail(username).then((user)=>{
-            const originalPassword = jwt.verify(user?.password, config.SESSION.secret)
-            if (password !== originalPassword) {
+            if(user){
+                const originalPassword = jwt.verify(user.password, config.SESSION.secret)
+                if (password !== originalPassword) {
+                    return done(null, false)
+                }
+                done(null, user)
+            }
+            else{
                 return done(null, false)
             }
-            done(null, user)
             })
         })
 )

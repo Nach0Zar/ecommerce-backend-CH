@@ -33,5 +33,7 @@ routerAPI.post('/shoppingcart', checkUserLoggedStatus, cartController.controller
 routerAPI.post('/shoppingcart/:id_cart/products', checkUserLoggedStatus, cartController.controllerPostProductToCart);
 routerAPI.delete('/shoppingcart/:id_cart', checkUserLoggedStatus, cartController.controllerDeleteAllProductsFromCart);
 routerAPI.delete('/shoppingcart/:id_cart/products/:id_prod', checkUserLoggedStatus, cartController.controllerDeleteProductFromCartByID)
+//user
+routerAPI.get('/user',checkUserLoggedStatus,userController.controllerGetUserInformation);
 
 export default routerAPI;
