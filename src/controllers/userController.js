@@ -3,6 +3,7 @@ import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import config from '../config/config.js';
 import jwt from 'jsonwebtoken';
+import { mailer } from '../models/classes/mailer.js'
 
 class userControllerClass{
     constructor(userContainer){
@@ -27,6 +28,11 @@ class userControllerClass{
             this.userContainer.getItemByEmail(user.email).then((userFound)=>{
                 if(userFound === null){
                     this.userContainer.save(user).then(()=>{
+                        mailer.send({
+                            to: config.MAIL_ADMIN,
+                            subject: 'nuevo registro!',
+                            text: `nuevo registro: ${JSON.stringify(user)}`
+                        })
                         res.sendStatus(201)
                     })
                 }

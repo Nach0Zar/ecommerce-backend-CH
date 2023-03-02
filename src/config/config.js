@@ -24,6 +24,14 @@ const sessionConfig = {
     saveUninitialized: false,
     EXPIRY_TIME: EXPIRY_TIME
 }
+const NODEMAILER_CONFIG = {
+    host: 'smtp.gmail.com',
+    port: 587,
+    auth: {
+        user: process.env.NODEMAILER_USER,
+        pass: process.env.NODEMAILER_PASS
+    }
+}
 const config = {
     PORT: argv.port,
     MODE: argv.mode,
@@ -45,6 +53,8 @@ const config = {
     mysql: {
         client: 'mysql2',
         connection: process.env.MYSQL
-    }
+    },
+    NODEMAILER_CONFIG: NODEMAILER_CONFIG,
+    MAIL_ADMIN: process.env.MAIL_ADMIN
 }
 export default config;
