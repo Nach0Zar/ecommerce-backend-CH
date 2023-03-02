@@ -3,7 +3,9 @@ import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import config from '../config/config.js';
 import jwt from 'jsonwebtoken';
-import { mailer } from '../models/classes/mailer.js'
+import { mailer } from '../models/classes/mailer.js';
+import cartController from './cartController.js';
+import request from 'request';
 
 class userControllerClass{
     constructor(userContainer){
@@ -16,30 +18,67 @@ class userControllerClass{
         const user = this.userContainer.getItemByID(id)
         done(null, user)
     }
-    registerUser = (req, res) => {
+    registerUser = async (req, res) => {
         if(req.body.password1 && (req.body.password1 === req.body.password2)){
-            const user = {
-                firstname: req.body.firstname,
-                lastname: req.body.lastname,
-                email: req.body.username,
-                profileImage: "blank",
-                password: jwt.sign(req.body.password1, config.SESSION.secret)
-            }
-            this.userContainer.getItemByEmail(user.email).then((userFound)=>{
-                if(userFound === null){
-                    this.userContainer.save(user).then(()=>{
-                        mailer.send({
-                            to: config.MAIL_ADMIN,
-                            subject: 'nuevo registro!',
-                            text: `nuevo registro: ${JSON.stringify(user)}`
+            cartController.createCart().then((cartID)=>{
+                const user = {
+                    firstname: req.body.firstname,
+                    lastname: req.body.lastname,
+                    email: req.body.username,
+                    profileImage: "blank",
+                    password: jwt.sign(req.body.password1, config.SESSION.secret),
+                    cart: cartID
+                }
+                this.userContainer.getItemByEmail(user.email).then((userFound)=>{
+                    if(userFound === null){
+                        this.userContainer.save(user).then(()=>{
+                            mailer.send({
+                                to: config.MAIL_ADMIN,
+                                subject: 'nuevo registro!',
+                                text: `nuevo registro: ${JSON.stringify(user)}`
+                            })
+                            res.sendStatus(201)
                         })
-                        res.sendStatus(201)
-                    })
-                }
-                else{
-                    res.sendStatus(409)
-                }
+                    }
+                    else{
+                        res.sendStatus(409)
+                    }
+                })
+            }).catch((err)=>{
+                console.log(err)
+                res.sendStatus(500)
             })
+            // request.post(`http://localhost:${config.PORT}/api/shoppingcart`, (err, response, body) => {
+            //     if (err) { 
+            //         res.sendStatus(500)
+            //     }
+            //     else{
+            //         let cartID = JSON.parse(response.body).id
+            //         const user = {
+            //             firstname: req.body.firstname,
+            //             lastname: req.body.lastname,
+            //             email: req.body.username,
+            //             profileImage: "blank",
+            //             password: jwt.sign(req.body.password1, config.SESSION.secret),
+            //             cart: cartID
+            //         }
+            //         this.userContainer.getItemByEmail(user.email).then((userFound)=>{
+            //             if(userFound === null){
+            //                 this.userContainer.save(user).then(()=>{
+            //                     mailer.send({
+            //                         to: config.MAIL_ADMIN,
+            //                         subject: 'nuevo registro!',
+            //                         text: `nuevo registro: ${JSON.stringify(user)}`
+            //                     })
+            //                     res.sendStatus(201)
+            //                 })
+            //             }
+            //             else{
+            //                 res.sendStatus(409)
+            //             }
+            //         })
+            //     }
+            // });
         }
         else{
             res.sendStatus(500)
@@ -61,6 +100,24 @@ class userControllerClass{
             if(item){
                 res.json(item)
                 res.status(200)
+            }
+            else{
+                res.sendStatus(403)
+            }
+        })
+    }
+    controllerGetUserCartInformation = (req, res) => {
+        this.userContainer.getItemByEmail(req.cookies.email).then((item)=>{
+            if(item){
+                request.get(`http://localhost:${config.PORT}/api/shoppingcart/${item.cart}/products`, (err, response, body) => {
+                    if (err) { 
+                        res.sendStatus(500)
+                    }
+                    else{
+                        res.json(JSON.parse(body))
+                        res.status(200)
+                    }
+                });
             }
             else{
                 res.sendStatus(403)

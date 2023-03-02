@@ -35,5 +35,6 @@ routerAPI.delete('/shoppingcart/:id_cart', checkUserLoggedStatus, cartController
 routerAPI.delete('/shoppingcart/:id_cart/products/:id_prod', checkUserLoggedStatus, cartController.controllerDeleteProductFromCartByID)
 //user
 routerAPI.get('/user',checkUserLoggedStatus,userController.controllerGetUserInformation);
+routerAPI.get('/user/shoppingcart',checkUserLoggedStatus,userController.controllerGetUserCartInformation);
 
 export default routerAPI;

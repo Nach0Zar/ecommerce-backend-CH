@@ -42,23 +42,17 @@ class cartControllerClass{
     }
     controllerPostCart = (req, response) => {
         try{
-            let productListParsed = [];
-            req.body.products.forEach(listedProduct => {
-                    let product = new Product(listedProduct.title, listedProduct.price, listedProduct.thumbnail, listedProduct.id);
-                    productListParsed.push(product);
-            });
-            let newCart = new Cart(productListParsed);
-            this.#container.save(newCart).then((newID)=>{
+            this.createCart(req.body.products).then((newID)=>{
                 response.status(200);
-                response.json({mensaje: `el carrito ${newID} fue agregado.`}) 
+                response.json({id: newID}) 
             }).catch(()=>{
                 response.status(500);
-                response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
+                response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.`, id: -1 });
             });
         }
         catch{
             response.status(500);
-            response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
+            response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.`, id: -1  });
         }
     }
     controllerPostProductToCart = (req, response) => {
@@ -186,6 +180,16 @@ class cartControllerClass{
             response.status(500);
             response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
         }
+    }
+    createCart = (items) => { 
+        let productListParsed = [];
+        let products = items ?? [];// if we want to create an empty cart or if products are loaded first
+        products.forEach(listedProduct => {
+                let product = new Product(listedProduct.title, listedProduct.price, listedProduct.thumbnail, listedProduct.id);
+                productListParsed.push(product);
+        });
+        let newCart = new Cart(productListParsed);
+        return this.#container.save(newCart)
     }
 }
 const cartController = new cartControllerClass
