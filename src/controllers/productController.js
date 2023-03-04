@@ -1,4 +1,4 @@
-import Product from '../models/classes/product.js';
+import Product from '../models/models/product.js';
 import { PERSISTENCIA } from '../db/config/config.js';
 import FirestoreContainer from '../models/containers/firestoreContainer.js';
 import MongoDBContainer from '../models/containers/mongoDBContainer.js';
