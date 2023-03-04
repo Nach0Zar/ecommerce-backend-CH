@@ -1,4 +1,4 @@
-import { mongoDatabase } from '../../db/mongoClient.js';
+import { mongoDatabase } from '../db/mongoClient.js';
 import Container from './container.js';
 import { ObjectID } from 'mongodb';
 class MongoDBContainer extends Container {
@@ -28,6 +28,13 @@ class MongoDBContainer extends Container {
             itemList.push(this.parseData(item))
         });
         return itemList
+    }
+    async getItemByCriteria(criteria) {
+        let item = await this.items.find(criteria).toArray();
+        if(!item.toString()){//to check if no doc was found
+            return null;
+        }
+        return (this.parseData(item[0]))
     }
     async modifyByID(idItem, newItemParam){
         delete newItemParam.id;

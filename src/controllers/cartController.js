@@ -1,9 +1,9 @@
-import Product from '../models/models/product.js';
-import Cart from '../models/models/cart.js';
+import Product from '../models/product.js';
+import Cart from '../models/cart.js';
 import { PERSISTENCIA } from '../db/config/config.js';
-import MemoryFSContainer from '../models/containers/MemoryFSContainer.js';
-import FirestoreContainer from '../models/containers/firestoreContainer.js';
-import MongoDBContainer from '../models/containers/mongoDBContainer.js';
+import MemoryFSContainer from '../containers/MemoryFSContainer.js';
+import FirestoreContainer from '../containers/firestoreContainer.js';
+import MongoDBContainer from '../containers/mongoDBContainer.js';
 import productController from './productController.js';
 class cartControllerClass{
     #container

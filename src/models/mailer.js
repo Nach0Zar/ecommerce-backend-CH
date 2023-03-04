@@ -1,5 +1,5 @@
 import { createTransport } from 'nodemailer';
-import config from '../../config/config.js';
+import config from '../config/config.js';
 
 class mailerClass {
     constructor(config) {
