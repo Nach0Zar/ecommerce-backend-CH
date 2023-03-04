@@ -3,7 +3,7 @@ import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import config from '../config/config.js';
 import jwt from 'jsonwebtoken';
-import { mailer } from '../models/classes/mailer.js';
+import { mailer } from '../models/models/mailer.js';
 import cartController from './cartController.js';
 import request from 'request';
 

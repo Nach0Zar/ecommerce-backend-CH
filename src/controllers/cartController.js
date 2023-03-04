@@ -1,5 +1,5 @@
-import Product from '../models/classes/product.js';
-import Cart from '../models/classes/cart.js';
+import Product from '../models/models/product.js';
+import Cart from '../models/models/cart.js';
 import { PERSISTENCIA } from '../db/config/config.js';
 import MemoryFSContainer from '../models/containers/MemoryFSContainer.js';
 import FirestoreContainer from '../models/containers/firestoreContainer.js';
