@@ -95,6 +95,10 @@ class userControllerClass{
             }
         })
     }
+    logoutUser = (req, res) => {
+        res.clearCookie('email');
+        res.sendStatus(200);
+    }
     controllerGetUserInformation = (req, res) => {
         this.userContainer.getItemByEmail(req.cookies.email).then((item)=>{
             if(item){

@@ -13,14 +13,6 @@ function checkUserLoggedStatus(req, res, next) {
         res.json({ error : -1, mensaje: "usuario no autorizado"})
     }
 }
-routerAPI.post('/login',
-    passport.authenticate('local-login', { failWithError: false }),
-    userController.loginUser);
-routerAPI.post('/register',userController.registerUser);
-routerAPI.post('/logout',(req, res)=>{
-    res.clearCookie('email');
-    res.sendStatus(200);
-});
 //products
 routerAPI.get('/products',productController.controllerGetAllProducts);
 routerAPI.get('/products/:id',productController.controllerGetProductByID);
@@ -36,5 +28,7 @@ routerAPI.delete('/shoppingcart/:id_cart/products/:id_prod', checkUserLoggedStat
 //user
 routerAPI.get('/user',checkUserLoggedStatus,userController.controllerGetUserInformation);
 routerAPI.get('/user/shoppingcart',checkUserLoggedStatus,userController.controllerGetUserCartInformation);
-
+routerAPI.post('/login',passport.authenticate('local-login', { failWithError: false }),userController.loginUser);
+routerAPI.post('/register',userController.registerUser);
+routerAPI.post('/logout',checkUserLoggedStatus,userController.logOutUser);
 export default routerAPI;
