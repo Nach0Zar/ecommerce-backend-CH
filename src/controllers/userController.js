@@ -15,21 +15,38 @@ class userControllerClass{
     constructor(){
         switch (PERSISTENCIA) {
             case 'mongodb': 
-                this.#container = new MongoDBContainer("products")
+                this.#container = new MongoDBContainer("users")
                 break
             case 'firebase':
-                this.#container = new FirestoreContainer("products")
+                this.#container = new FirestoreContainer("users")
                 break
             default:
-                this.#container = new MemoryFSContainer("products")
+                this.#container = new MemoryFSContainer("users")
                 break
         }
+        passport.use('local-login', new LocalStrategy(
+            {},
+            (username, password, done) => {
+                userController.#container.getItemByCriteria({email: username}).then((user)=>{
+                    if(user){
+                        const originalPassword = jwt.verify(user.password, config.SESSION.secret)
+                        if (password !== originalPassword) {
+                            return done(null, false)
+                        }
+                        done(null, user)
+                    }
+                    else{
+                        return done(null, false)
+                    }
+                    })
+                })
+        )
     }
     serializeUserMongo = (user, done) => {
         done(null, user.id);
     }
     deserializeUserMongo = (id, done) => {
-        const user = this.userContainer.getItemByID(id)
+        const user = this.#container.getItemByID(id)
         done(null, user)
     }
     registerUser = async (req, res) => {
@@ -43,9 +60,9 @@ class userControllerClass{
                     password: jwt.sign(req.body.password1, config.SESSION.secret),
                     cart: cartID
                 }
-                this.userContainer.getItemByCriteria({email: user.email}).then((userFound)=>{
+                this.#container.getItemByCriteria({email: user.email}).then((userFound)=>{
                     if(userFound === null){
-                        this.userContainer.save(user).then(()=>{
+                        this.#container.save(user).then(()=>{
                             mailer.send({
                                 to: config.MAIL_ADMIN,
                                 subject: 'nuevo registro!',
@@ -68,7 +85,7 @@ class userControllerClass{
         }
     }
     loginUser = (req, res) => {
-        this.userContainer.getItemByCriteria({email: req.body.username}).then((item)=>{
+        this.#container.getItemByCriteria({email: req.body.username}).then((item)=>{
             if(item){
                 res.cookie('email', item.email, {maxAge: config.SESSION.EXPIRY_TIME})
                 res.sendStatus(200)
@@ -83,7 +100,7 @@ class userControllerClass{
         res.sendStatus(200);
     }
     controllerGetUserInformation = (req, res) => {
-        this.userContainer.getItemByCriteria({email: req.cookies.email}).then((item)=>{
+        this.#container.getItemByCriteria({email: req.cookies.email}).then((item)=>{
             if(item){
                 res.json(item)
                 res.status(200)
@@ -94,7 +111,7 @@ class userControllerClass{
         })
     }
     controllerGetUserCartInformation = (req, res) => {
-        this.userContainer.getItemByCriteria({email: req.cookies.email}).then((item)=>{
+        this.#container.getItemByCriteria({email: req.cookies.email}).then((item)=>{
             if(item){
                 request.get(`http://localhost:${config.PORT}/api/shoppingcart/${item.cart}/products`, (err, response, body) => {
                     if (err) { 
@@ -113,23 +130,6 @@ class userControllerClass{
     }
 }
 
-const userController = new userControllerClass(new MongoDBContainer("users"))
+const userController = new userControllerClass()
 Object.freeze(userController);
-passport.use('local-login', new LocalStrategy(
-    {},
-    (username, password, done) => {
-        userController.userContainer.getItemByCriteria({email: username}).then((user)=>{
-            if(user){
-                const originalPassword = jwt.verify(user.password, config.SESSION.secret)
-                if (password !== originalPassword) {
-                    return done(null, false)
-                }
-                done(null, user)
-            }
-            else{
-                return done(null, false)
-            }
-            })
-        })
-)
 export default userController;
