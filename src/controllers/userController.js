@@ -1,5 +1,4 @@
 import config from '../config/config.js';
-import request from 'request';
 import userService from '../services/userService.js';
 import registerUserValidation from '../validations/registerUserValidation.js';
 

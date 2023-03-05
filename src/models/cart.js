@@ -57,5 +57,8 @@ class Cart{
         }
         return dto
     }
+    cleanCart(){
+        this.products = [];
+    }
 }
 export default Cart;

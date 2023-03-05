@@ -37,7 +37,7 @@ class UserService extends Service{
         done(null, user)
     }
     registerUser = async (information) => {
-        let cartID = await cartController.createCart();
+        let cartID = await cartService.createCart();
         const user = {
             firstname: information.firstname,
             lastname: information.lastname,
