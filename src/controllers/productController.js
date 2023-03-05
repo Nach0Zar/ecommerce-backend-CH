@@ -3,7 +3,7 @@ import { PERSISTENCIA } from '../db/config/config.js';
 import FirestoreContainer from '../containers/firestoreContainer.js';
 import MongoDBContainer from '../containers/mongoDBContainer.js';
 import MemoryFSContainer from '../containers/MemoryFSContainer.js';
-class productControllerClass{
+class ProductControllerClass{
     #container
     constructor(){
         switch (PERSISTENCIA) {
@@ -173,6 +173,6 @@ class productControllerClass{
         return this.#container;
     }
 }
-const productController = new productControllerClass();
+const productController = new ProductControllerClass();
 Object.freeze(productController);
 export default productController;

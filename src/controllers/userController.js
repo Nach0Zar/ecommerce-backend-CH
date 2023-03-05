@@ -3,7 +3,7 @@ import request from 'request';
 import userService from '../services/userService.js';
 import registerUserValidation from '../validations/registerUserValidation.js';
 
-class userControllerClass{
+class UserControllerClass{
     controllerPostRegisterUser = async (req, res, next) => {
         try{
             await registerUserValidation(req);
@@ -14,9 +14,11 @@ class userControllerClass{
             next(error);
         }
     }
-    controllerPostLogInUser = (req, res, next) => {
+    controllerPostLogInUser = async (req, res, next) => {
         try{
-            userService.loginUser();
+            let userEmailValidated = await userService.loginUser(req.body.username);
+            res.cookie('email', userEmailValidated, {maxAge: config.SESSION.EXPIRY_TIME});
+            res.sendStatus(200);
         }
         catch(error){
             next(error);
@@ -26,26 +28,26 @@ class userControllerClass{
         res.clearCookie('email');
         res.sendStatus(200);
     }
-    controllerGetUserInformation = (req, res, next) => {
+    controllerGetUserInformation = async (req, res, next) => {
         try{
-            let userInformation = userService.getUserInformation();
+            let userInformation = await userService.getUserInformation(req.cookies.email);
             res.status(200).json(userInformation);
         }
         catch(error){
-            next(error)
+            next(error);
         }
     }
-    controllerGetUserCartInformation = (req, res) => {
+    controllerGetUserCartInformation = async (req, res, next) => {
         try{
-            let cartInformation = userService.getUserCartInformation(email)
+            let cartInformation = await userService.getUserCartInformation(req.cookies.email);
             res.status(200).json(cartInformation);
         }
         catch(error){
-            next(error)
+            next(error);
         }
     }
 }
 
-const userController = new userControllerClass()
+const userController = new UserControllerClass()
 Object.freeze(userController);
 export default userController;

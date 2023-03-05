@@ -14,7 +14,7 @@ class UserService extends Service{
         passport.use('local-login', new LocalStrategy(
             {},
             (username, password, done) => {
-                userController.container.getItemByCriteria({email: username}).then((user)=>{
+                this.container.getItemByCriteria({email: username}).then((user)=>{
                     if(user){
                         const originalPassword = jwt.verify(user.password, config.SESSION.secret)
                         if (password !== originalPassword) {
@@ -57,17 +57,12 @@ class UserService extends Service{
             throw new Error(error, 'INTERNAL_ERROR')
         });
     }
-    loginUser = (req, res) => {
-        //TODO REFACTOR
-        this.container.getItemByCriteria({email: req.body.username}).then((item)=>{
-            if(item){
-                res.cookie('email', item.email, {maxAge: config.SESSION.EXPIRY_TIME})
-                res.sendStatus(200)
-            }
-            else{
-                res.sendStatus(403)
-            }
-        })
+    loginUser = async (email) => {
+        let item = await this.container.getItemByCriteria({email: email})
+        if(!item){
+            throw new Error(`The server could not validate the credentials`, 'FORBIDDEN')
+        }
+        return item.email;
     }
     getUserInformation = async (email) => {
         let user = await this.container.getItemByCriteria({email: email})
@@ -77,11 +72,11 @@ class UserService extends Service{
         return user;
     }
     getUserCartInformation = async (email) => {
-        let user = await this.getUserInformation({email: email})
-        return cartService.getCartProducts(user.cart);
-        //TODO: error handler
+        let user = await this.getUserInformation(email)
+        let cartInformation = await cartService.getCartProducts(user.cart);
+        return cartInformation;
     }
-    checkUserExisting = async (email) =>{
+    checkExistingUser = async (email) =>{
         let userFound = await this.container.getItemByCriteria({email: email});
         return (userFound !== null)
     }

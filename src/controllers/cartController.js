@@ -1,60 +1,35 @@
 import Product from '../models/product.js';
 import Cart from '../models/cart.js';
-import { PERSISTENCIA } from '../db/config/config.js';
-import MemoryFSContainer from '../containers/MemoryFSContainer.js';
-import FirestoreContainer from '../containers/firestoreContainer.js';
-import MongoDBContainer from '../containers/mongoDBContainer.js';
 import productController from './productController.js';
-class cartControllerClass{
-    constructor(){
-        switch (PERSISTENCIA) {
-            case 'mongodb': 
-                this.container = new MongoDBContainer("carts")
-                break
-            case 'firebase':
-                this.container = new FirestoreContainer("carts")
-                break
-            default:
-                this.container = new MemoryFSContainer("carts")
-        }
-    }
-    controllerGetCartProducts = (req, response) => {
+import cartService from '../services/cartService.js';
+
+class CartControllerClass{
+    controllerGetCartProducts = async (req, res, next) => {
         try{
-            this.container.getItemByID(req.params.id_cart).then((cart)=>{
-                if(!cart){    
-                    response.status(404);      
-                    response.json({ mensaje: `no se encontró el carrito con el id ${req.params.id_cart}` });
-                }
-                else{
-                    response.status(200);
-                    response.json(cart.products);
-                }
-            }).catch(()=>{
-                response.status(500);      
-                response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
-            });
+            let products = await cartService.getCartProducts();
+            res.status(200).json(products);
         }
-        catch{
-            response.status(500);      
-            response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
+        catch(error){
+            next(error);
         }
     }
-    controllerPostCart = (req, response) => {
+    controllerPostCart = async (req, res, next) => {
         try{
-            this.createCart(req.body.products).then((newID)=>{
-                response.status(200);
-                response.json({id: newID}) 
-            }).catch(()=>{
-                response.status(500);
-                response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.`, id: -1 });
-            });
+            let newID = await cartService.createCart(req.body.products);
+            res.status(200).json({id: newID});
         }
-        catch{
-            response.status(500);
-            response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.`, id: -1  });
+        catch(error){
+            next(error);
         }
     }
-    controllerPostProductToCart = (req, response) => {
+    controllerPostProductToCart = async (req, res, next) => {
+        try{
+            let cartUpdated = await cartService.addProductToCart(req.params.id_cart, req.body.id_prod);
+            res.status(200).json(cartUpdated.products);
+        }
+        catch(error){
+            next(error);
+        }
         try{
             if(req.params.id_cart){
                 this.container.getItemByID(req.params.id_cart).then((cart)=>{
@@ -195,6 +170,6 @@ class cartControllerClass{
         })
     }
 }
-const cartController = new cartControllerClass
+const cartController = new CartControllerClass
 Object.freeze(cartController);
 export default cartController;

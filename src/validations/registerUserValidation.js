@@ -8,7 +8,7 @@ export default async function registerUserValidation (req) {
     if(!req.body.password1){
         throw new Error(`The password can not be empty`, 'BAD_REQUEST');
     }
-    let userFound = await userService.checkUserExisting(req.body.username)
+    let userFound = await userService.checkExistingUser(req.body.username)
     if(userFound){
         throw new Error(`There is already a user registered with the email ${req.body.username}`, 'CONFLICT');
     }
