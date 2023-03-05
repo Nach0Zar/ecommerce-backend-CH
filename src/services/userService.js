@@ -37,16 +37,6 @@ class UserService extends Service{
         done(null, user)
     }
     registerUser = async (information) => {
-        let userFound = await this.container.getItemByCriteria({email: information.username})
-        if(userFound != null){
-            throw new Error(`There is already a user registered with the email ${information.username}`, 'CONFLICT');
-        }
-        if((information.password1 !== information.password2)){
-            throw new Error(`The password did not match`, 'BAD_REQUEST');
-        }
-        if(!information.password1){
-            throw new Error(`The password can not be empty`, 'BAD_REQUEST');
-        }
         let cartID = await cartController.createCart();
         const user = {
             firstname: information.firstname,
@@ -68,6 +58,7 @@ class UserService extends Service{
         });
     }
     loginUser = (req, res) => {
+        //TODO REFACTOR
         this.container.getItemByCriteria({email: req.body.username}).then((item)=>{
             if(item){
                 res.cookie('email', item.email, {maxAge: config.SESSION.EXPIRY_TIME})
@@ -87,10 +78,12 @@ class UserService extends Service{
     }
     getUserCartInformation = async (email) => {
         let user = await this.getUserInformation({email: email})
-        if(!user){
-            throw new Error(`No user was found with the email ${email}`, 'NOT_FOUND');
-        }
         return cartService.getCartProducts(user.cart);
+        //TODO: error handler
+    }
+    checkUserExisting = async (email) =>{
+        let userFound = await this.container.getItemByCriteria({email: email});
+        return (userFound !== null)
     }
 }
 const userService = new UserService();

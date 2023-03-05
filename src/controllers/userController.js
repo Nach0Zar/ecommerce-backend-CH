@@ -1,10 +1,12 @@
 import config from '../config/config.js';
 import request from 'request';
 import userService from '../services/userService.js';
+import registerUserValidation from '../validations/registerUserValidation.js';
 
 class userControllerClass{
     controllerPostRegisterUser = async (req, res, next) => {
         try{
+            await registerUserValidation(req);
             let userID = await userService.registerUser(req.body);
             res.status(201).json(userID)
         }
