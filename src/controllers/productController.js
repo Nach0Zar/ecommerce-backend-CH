@@ -1,9 +1,11 @@
 import productService from '../services/productService.js';
+import logger from '../utils/logger.js';
 
 class ProductControllerClass{
     controllerGetAllProducts = async (req, res, next) => {
         try{
             let items = await productService.getAllItems();
+            logger.info(`GET REQUEST successfull for all products`);
             res.status(200).json(items);
         }
         catch(error){
@@ -13,6 +15,7 @@ class ProductControllerClass{
     controllerGetProductByID = async (req, res, next) => {
         try{
             let item = await productService.getProduct(req.params.id);
+            logger.info(`GET REQUEST successfull for product ${req.params.id}`);
             res.status(200).json(item)
         }
         catch(error){
@@ -22,6 +25,7 @@ class ProductControllerClass{
     controllerPutProductByID = async (req, res, next) => {
         try{
             let item = await productService.modifyProductByID(req.params.id, req.body);
+            logger.info(`PUT REQUEST successfull for product ${req.params.id}`);
             res.status(200).json(item)
         }
         catch(error){
@@ -31,6 +35,7 @@ class ProductControllerClass{
     controllerPostProduct = async (req, res, next) => {
         try{
             let productID = await productService.createProduct(req.body.title, req.body.price, req.body.thumbnail);
+            logger.info(`POST REQUEST successfull for product ${productID}`);
             res.status(200).json({message: `The item with ID ${productID} was added to the catalog.`})
         }
         catch(error){
@@ -40,6 +45,7 @@ class ProductControllerClass{
     controllerDeleteProductByID = async (req, res, next) => {
         try{
             await productService.deleteProduct(req.params.id);
+            logger.info(`DELETE REQUEST successfull for product ${req.params.id}`);
             res.status(200).json({message: `The item with ID ${req.params.id} was deleted from the catalog.`})
         }
         catch(error){

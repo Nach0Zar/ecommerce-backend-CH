@@ -1,3 +1,5 @@
+import logger from "../utils/logger.js";
+
 export default function errorHandler(err, req, res, next){
     switch (err.type){
         case 'NOT_FOUND':{
@@ -21,5 +23,6 @@ export default function errorHandler(err, req, res, next){
             break;
         }
     }
+    logger.error(err.message)
     res.json({message: err.message})
 }
