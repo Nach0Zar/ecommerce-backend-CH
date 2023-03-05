@@ -6,22 +6,21 @@ import FirestoreContainer from '../containers/firestoreContainer.js';
 import MongoDBContainer from '../containers/mongoDBContainer.js';
 import productController from './productController.js';
 class cartControllerClass{
-    #container
     constructor(){
         switch (PERSISTENCIA) {
             case 'mongodb': 
-                this.#container = new MongoDBContainer("carts")
+                this.container = new MongoDBContainer("carts")
                 break
             case 'firebase':
-                this.#container = new FirestoreContainer("carts")
+                this.container = new FirestoreContainer("carts")
                 break
             default:
-                this.#container = new MemoryFSContainer("carts")
+                this.container = new MemoryFSContainer("carts")
         }
     }
     controllerGetCartProducts = (req, response) => {
         try{
-            this.#container.getItemByID(req.params.id_cart).then((cart)=>{
+            this.container.getItemByID(req.params.id_cart).then((cart)=>{
                 if(!cart){    
                     response.status(404);      
                     response.json({ mensaje: `no se encontró el carrito con el id ${req.params.id_cart}` });
@@ -58,7 +57,7 @@ class cartControllerClass{
     controllerPostProductToCart = (req, response) => {
         try{
             if(req.params.id_cart){
-                this.#container.getItemByID(req.params.id_cart).then((cart)=>{
+                this.container.getItemByID(req.params.id_cart).then((cart)=>{
                     if(!cart){    
                         response.status(404);      
                         response.json({ mensaje: `no se encontró el carrito con el id ${req.params.id_cart}` });
@@ -68,15 +67,15 @@ class cartControllerClass{
                         .then((product)=>{
                             if(product !== null){
                                 let productCreated = new Product( product.title, product.price, product.thumbnail, req.body.id_prod)
-                                this.#container.getItemByID(req.params.id_cart).then((cart)=>{
+                                this.container.getItemByID(req.params.id_cart).then((cart)=>{
                                     let parsedProducts = []
                                     cart.products.forEach((listedProduct)=>{
                                         parsedProducts.push(new Product( listedProduct.title, listedProduct.price, listedProduct.thumbnail, listedProduct.id))
                                     })
                                     let cartItem = new Cart(parsedProducts, req.params.id_cart);
                                     cartItem.addProduct(productCreated);
-                                    this.#container.modifyByID(req.params.id_cart, cartItem.toDTO()).then(()=>{
-                                        this.#container.getItemByID(req.params.id_cart).then((cartUpdated)=>{
+                                    this.container.modifyByID(req.params.id_cart, cartItem.toDTO()).then(()=>{
+                                        this.container.getItemByID(req.params.id_cart).then((cartUpdated)=>{
                                             response.status(200);
                                             response.json(cartUpdated.products);
                                         }).catch(()=>{
@@ -118,9 +117,9 @@ class cartControllerClass{
     }
     controllerDeleteAllProductsFromCart = (req, response) => {
         try{
-            this.#container.getItemByID(req.params.id_cart).then((cart)=>{
+            this.container.getItemByID(req.params.id_cart).then((cart)=>{
                 if(cart){
-                    this.#container.modifyByID(req.params.id_cart, {products: []}).then(()=>{
+                    this.container.modifyByID(req.params.id_cart, {products: []}).then(()=>{
                         response.status(200);
                         response.json({mensaje: `el carrito ${req.params.id_cart} fue vaciado.`}) 
                     }).catch(()=>{
@@ -144,7 +143,7 @@ class cartControllerClass{
     }
     controllerDeleteProductFromCartByID = (req, response) => {
         try{
-            this.#container.getItemByID(req.params.id_cart).then((cartFound)=>{
+            this.container.getItemByID(req.params.id_cart).then((cartFound)=>{
                 if(cartFound){
                     //check if cart has product with matching id
                     let parsedProducts = []
@@ -154,7 +153,7 @@ class cartControllerClass{
                     let cart = new Cart(parsedProducts, req.params.id_cart);
                     if(cart.hasProduct(req.params.id_prod)){
                         cart.deleteProduct(req.params.id_prod);
-                        this.#container.modifyByID(req.params.id_cart, cart.toDTO()).then(()=>{
+                        this.container.modifyByID(req.params.id_cart, cart.toDTO()).then(()=>{
                             response.status(200);
                             response.json({mensaje: `el item ${req.params.id_prod} del carrito ${req.params.id_cart} fue eliminado.`}) 
                         }).catch(()=>{
@@ -181,7 +180,7 @@ class cartControllerClass{
             response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
         }
     }
-    createCart = (items) => { 
+    createCart = async (items) => { 
         let productListParsed = [];
         let products = items ?? [];// if we want to create an empty cart or if products are loaded first
         products.forEach(listedProduct => {
@@ -189,7 +188,11 @@ class cartControllerClass{
                 productListParsed.push(product);
         });
         let newCart = new Cart(productListParsed);
-        return this.#container.save(newCart)
+        return await this.container.save(newCart).then((cartID)=>{
+            return cartID
+        }).catch((error)=>{
+            throw new Error(error, 'INTERNAL_ERROR')
+        })
     }
 }
 const cartController = new cartControllerClass

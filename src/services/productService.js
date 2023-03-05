@@ -1,2 +1,2 @@
-import { Error } from "../models/error.js";
+import { Error } from "../error/error";
 
