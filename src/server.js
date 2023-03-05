@@ -2,7 +2,7 @@ import express from 'express';
 import session from 'express-session';
 import bodyParser from 'body-parser';
 import routerAPI from "./routers/router.js";
-import userController from './controllers/userController.js';
+import userService from './services/userService.js';
 import passport from 'passport';
 import config from './config/config.js';
 import cookieParser from 'cookie-parser';
@@ -17,10 +17,10 @@ app.use(session(config.SESSION));
 app.use(passport.session());
 app.use(passport.initialize());
 passport.serializeUser((user, done) => {
-    userController.serializeUserMongo(user, done)
+    userService.serializeUserMongo(user, done)
 });
 passport.deserializeUser((id, done) => {
-    userController.deserializeUserMongo(id, done);
+    userService.deserializeUserMongo(id, done);
 });
 //routes
 app.use('/api/',routerAPI);

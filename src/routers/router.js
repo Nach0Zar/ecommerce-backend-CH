@@ -1,7 +1,7 @@
 import express from 'express';
 import productController from '../controllers/productController.js';
 import cartController from '../controllers/cartController.js';
-import userController from '../controllers/userController.js';
+import userController from '../controllers/userController.js'
 import passport from 'passport';
 import checkUserLoggedValidation from '../validations/checkUserLoggedValidation.js';
 
