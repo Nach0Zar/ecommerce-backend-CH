@@ -10,7 +10,7 @@ export default function productDataValidation(title, price, thumbnail) {
     if(thumbnail.isEmpty()){
         throw new Error(`The product thumbnail can not be empty.`, 'BAD_REQUEST')
     }
-    if(!isNaN(price)){
+    if(isNaN(price)){
         throw new Error(`The product price must be a number.`, 'BAD_REQUEST')
     }
     if(+price < 0){
