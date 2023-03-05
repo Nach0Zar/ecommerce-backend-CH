@@ -39,8 +39,8 @@ class ProductControllerClass{
     }
     controllerDeleteProductByID = async (req, res, next) => {
         try{
-            let productID = await productService.deleteProduct(req.params.id);
-            res.status(200).json({message: `The item with ID ${productID} was deleted from the catalog.`})
+            await productService.deleteProduct(req.params.id);
+            res.status(200).json({message: `The item with ID ${req.params.id} was deleted from the catalog.`})
         }
         catch(error){
             next(error);
