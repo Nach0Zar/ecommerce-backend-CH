@@ -6,6 +6,7 @@ import userController from './controllers/userController.js';
 import passport from 'passport';
 import config from './config/config.js';
 import cookieParser from 'cookie-parser';
+import errorHandler from './middlewares/errorHandler.js';
 const app = express();
 //middlewares
 app.use(bodyParser.json());
@@ -27,6 +28,8 @@ app.use('/api/',routerAPI);
 app.all('*', (req, res) => {
     res.status(404).json({error:-2, mensaje: "Ruta no implementada"})
 })
+//errorHandler
+app.use(errorHandler)
 //server port listener
 const port = process.env.PORT ?? 8080;
 const server = app.listen(port,()=>{

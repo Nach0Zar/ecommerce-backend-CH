@@ -1,7 +1,7 @@
 import { createTransport } from 'nodemailer';
 import config from '../config/config.js';
 
-class mailerClass {
+class MailerClass {
     constructor(config) {
         this.nodemailerClient = createTransport(config)
     }
@@ -14,6 +14,7 @@ class mailerClass {
         }
     }
 }
-
-export const mailer = new mailerClass(config.NODEMAILER_CONFIG)
+const mailer = new MailerClass(config.NODEMAILER_CONFIG);
+Object.freeze(mailer);
+export default mailer;
 
