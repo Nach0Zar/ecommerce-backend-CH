@@ -1,13 +1,13 @@
 import { Error } from "../error/error.js";
 
 export default function productDataValidation(title, price, thumbnail) {
-    if(isEmpty(title)){
+    if(title.isEmpty()){
         throw new Error(`The product title can not be empty.`, 'BAD_REQUEST')
     }
-    if(isEmpty(price)){
+    if(price.isEmpty()){
         throw new Error(`The product price can not be empty.`, 'BAD_REQUEST')
     }
-    if(isEmpty(thumbnail)){
+    if(thumbnail.isEmpty()){
         throw new Error(`The product thumbnail can not be empty.`, 'BAD_REQUEST')
     }
     if(!isNaN(price)){
