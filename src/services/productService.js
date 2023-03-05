@@ -22,15 +22,15 @@ class ProductService extends Service{
     parseProducts = async (productList = []) => {
         let parsedProducts = [];
         for(const listedProduct in productList){
-            let product = await productService.getProduct(listedProduct.id);
-            productValidation(listedProduct, product);
+            let product = await productService.getProduct(productList[listedProduct].id);
+            productValidation(productList[listedProduct], product);
             parsedProducts.push(product);
         }
         return parsedProducts;
     }
     getAllItems = async () => {
         let items = await this.container.getAllItems();
-        let parsedProducts = this.parseProducts(items);
+        let parsedProducts = await this.parseProducts(items);
         if(parsedProducts < 1){
             throw new Error(`No product was found`, 'BAD_REQUEST');
         }
@@ -41,7 +41,7 @@ class ProductService extends Service{
             throw new Error(`No product was found matching ID ${productID}`, 'BAD_REQUEST');
         }
         let productFound = await this.container.getItemByID(productID);
-        let parsedProduct = new Product(productFound.title, productFound.price, productFound.thumbnail, productFound.id)
+        let parsedProduct = new Product(productFound.title, +productFound.price, productFound.thumbnail, productFound.id)
         parsedProduct.modify(productNewData);
         if(await this.container.modifyByID(productID, productNewData)){
             return parsedProduct;
