@@ -3,7 +3,7 @@ import cartService from '../services/cartService.js';
 class CartControllerClass{
     controllerGetCartProducts = async (req, res, next) => {
         try{
-            let products = await cartService.getCartProducts();
+            let products = await cartService.getCartProducts(req.params.id_cart);
             res.status(200).json(products);
         }
         catch(error){
@@ -21,8 +21,8 @@ class CartControllerClass{
     }
     controllerPostProductToCart = async (req, res, next) => {
         try{
-            let cartUpdated = await cartService.addProductToCart(req.params.id_cart, req.body.id_prod);
-            res.status(200).json(cartUpdated.products);
+            let cartProducts = await cartService.addProductToCart(req.params.id_cart, req.body.id_prod);
+            res.status(200).json(cartProducts);
         }
         catch(error){
             next(error);
