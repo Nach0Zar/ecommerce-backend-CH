@@ -50,7 +50,7 @@ class CartService extends Service{
         let parsedProducts = await productService.parseProducts(cartFound.products)
         let cartItem = new Cart(parsedProducts, cartFound.id)
         cartItem.cleanCart();
-        await this.container.modifyByID(req.params.id_cart, cartItem.toDTO())
+        await this.container.modifyByID(cartItem.getID(), cartItem.toDTO())
         if(cartItem.getProducts().length > 0){            
             throw new Error(`There was an error modifing the cart`, 'INTERNAL_ERROR') 
         }
@@ -64,10 +64,7 @@ class CartService extends Service{
             throw new Error(`There was no product matching the ID ${productID} in the cart with ID ${cart.id}`, 'BAD_REQUEST')
         }
         cartItem.deleteProduct(productID);
-        await this.container.modifyByID(req.params.id_cart, cartItem.toDTO())
-        if(cartItem.getProducts().length > 0){            
-            throw new Error(`There was an error modifing the cart`, 'INTERNAL_ERROR') 
-        }
+        await this.container.modifyByID(cart.id, cartItem.toDTO())
     }
 }
 const cartService = new CartService();
