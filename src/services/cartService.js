@@ -77,7 +77,7 @@ class CartService extends Service{
         if(cartProducts.length > 0){
             cartItem.cleanCart();
             await this.deleteAllProductsFromCart(cartID);
-            return cartProducts.map((product)=>product.id);
+            return cartProducts;
         }
         throw new Error(`No product was found in the cart`, 'NOT_FOUND');
     }

@@ -84,7 +84,13 @@ class UserService extends Service{
             throw new Error(`No user was found with the email ${email}`, 'NOT_FOUND');
         }
         let user = await this.container.getItemByCriteria({email: email})
-        return await cartService.purchaseCart(user.cart);
+        let productsBougth = await cartService.purchaseCart(user.cart);
+        mailer.send({
+            to: config.MAIL_ADMIN,
+            subject: `nueva compra de: ${user.firstname} ${user.lastname} - ${email}`,
+            text: `elementos comprados: ${(productsBougth.map((product)=>product.title)).join(", ")}`
+        })
+        return productsBougth.map((product)=>product.title);
     }
 }
 const userService = new UserService();
