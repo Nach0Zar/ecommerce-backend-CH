@@ -21,6 +21,7 @@ routerAPI.delete('/shoppingcart/:id_cart/products/:id_prod', checkUserLoggedVali
 //user
 routerAPI.get('/user',checkUserLoggedValidation,userController.controllerGetUserInformation);
 routerAPI.get('/user/shoppingcart',checkUserLoggedValidation,userController.controllerGetUserCartInformation);
+routerAPI.post('/user/shoppingcart/purchase',checkUserLoggedValidation,userController.controllerPostUserPurchaseCart);
 routerAPI.post('/login',passport.authenticate('local-login', { failWithError: false }),userController.controllerPostLogInUser);
 routerAPI.post('/register', userController.controllerPostRegisterUser);
 routerAPI.post('/logout',checkUserLoggedValidation,userController.controllerPostLogOutUser);

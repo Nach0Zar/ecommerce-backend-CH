@@ -75,9 +75,16 @@ class UserService extends Service{
         let cartInformation = await cartService.getCartProducts(user.cart);
         return cartInformation;
     }
-    checkExistingUser = async (email) =>{
+    checkExistingUser = async (email) => {
         let userFound = await this.container.getItemByCriteria({email: email});
         return (userFound !== null)
+    }
+    purchaseCart = async (email) => {
+        if(!this.checkExistingUser(email)){
+            throw new Error(`No user was found with the email ${email}`, 'NOT_FOUND');
+        }
+        let user = await this.container.getItemByCriteria({email: email})
+        return await cartService.purchaseCart(user.cart);
     }
 }
 const userService = new UserService();

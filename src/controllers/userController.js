@@ -51,6 +51,16 @@ class UserControllerClass{
             next(error);
         }
     }
+    controllerPostUserPurchaseCart = async (req, res, next) => {
+        try{
+            let itemsBought = await userService.purchaseCart(req.cookies.email);
+            logger.info(`POST REQUEST successfull for purchasing cart items from user ${req.cookies.email}`);
+            res.status(200).json({message: `Cart was successfully purchased! The following products were purchased: ${itemsBought.join(", ")}`});
+        }
+        catch(error){
+            next(error);
+        }
+    }
 }
 
 const userController = new UserControllerClass()
