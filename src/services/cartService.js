@@ -66,6 +66,21 @@ class CartService extends Service{
         cartItem.deleteProduct(productID);
         await this.container.modifyByID(cart.id, cartItem.toDTO())
     }
+    purchaseCart = async (cartID) => {
+        if(!this.checkExistingCart(cartID)){
+            throw new Error(`No cart was found with the id ${cartID}`, 'NOT_FOUND');
+        }
+        let cartFound = await this.container.getItemByID(cartID);
+        let parsedProducts = await productService.parseProducts(cartFound.products)
+        let cartItem = new Cart(parsedProducts, cartFound.id);
+        let cartProducts = cartItem.getProducts();
+        if(cartProducts.length > 0){
+            cartItem.cleanCart();
+            await this.deleteAllProductsFromCart(cartID);
+            return cartProducts.map((product)=>product.id);
+        }
+        throw new Error(`No product was found in the cart`, 'NOT_FOUND');
+    }
 }
 const cartService = new CartService();
 Object.freeze(cartService);
