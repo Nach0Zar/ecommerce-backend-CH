@@ -1,193 +1,58 @@
-import Product from '../models/classes/product.js';
-import Cart from '../models/classes/cart.js';
-import { PERSISTENCIA } from '../db/config/config.js';
-import MemoryFSContainer from '../models/containers/MemoryFSContainer.js';
-import FirestoreContainer from '../models/containers/firestoreContainer.js';
-import MongoDBContainer from '../models/containers/mongoDBContainer.js';
-import productController from './productController.js';
-class cartControllerClass{
-    #container
-    constructor(){
-        switch (PERSISTENCIA) {
-            case 'mongodb': 
-                this.#container = new MongoDBContainer("carts")
-                break
-            case 'firebase':
-                this.#container = new FirestoreContainer("carts")
-                break
-            default:
-                this.#container = new MemoryFSContainer("carts")
+import cartService from '../services/cartService.js';
+import logger from '../utils/logger.js';
+
+class CartControllerClass{
+    controllerGetCartProducts = async (req, res, next) => {
+        try{
+            let products = await cartService.getCartProducts(req.params.id_cart);
+            logger.info(`GET REQUEST successfull for cart products ID ${req.params.id_cart}`);
+            res.status(200).json(products);
+        }
+        catch(error){
+            next(error);
         }
     }
-    controllerGetCartProducts = (req, response) => {
+    controllerPostCart = async (req, res, next) => {
         try{
-            this.#container.getItemByID(req.params.id_cart).then((cart)=>{
-                if(!cart){    
-                    response.status(404);      
-                    response.json({ mensaje: `no se encontró el carrito con el id ${req.params.id_cart}` });
-                }
-                else{
-                    response.status(200);
-                    response.json(cart.products);
-                }
-            }).catch(()=>{
-                response.status(500);      
-                response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
-            });
+            let newID = await cartService.createCart(req.body.products);
+            logger.info(`POST REQUEST successfull for cart ID ${newID}`);
+            res.status(201).json({id: newID});
         }
-        catch{
-            response.status(500);      
-            response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
+        catch(error){
+            next(error);
         }
     }
-    controllerPostCart = (req, response) => {
+    controllerPostProductToCart = async (req, res, next) => {
         try{
-            let productListParsed = [];
-            req.body.products.forEach(listedProduct => {
-                    let product = new Product(listedProduct.title, listedProduct.price, listedProduct.thumbnail, listedProduct.id);
-                    productListParsed.push(product);
-            });
-            let newCart = new Cart(productListParsed);
-            this.#container.save(newCart).then((newID)=>{
-                response.status(200);
-                response.json({mensaje: `el carrito ${newID} fue agregado.`}) 
-            }).catch(()=>{
-                response.status(500);
-                response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
-            });
+            let cartProducts = await cartService.addProductToCart(req.params.id_cart, req.body.id_prod);
+            logger.info(`POST REQUEST successfull for product ${req.body.id_prod} in cart ${req.params.id_cart}`);
+            res.status(200).json(cartProducts);
         }
-        catch{
-            response.status(500);
-            response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
+        catch(error){
+            next(error);
         }
     }
-    controllerPostProductToCart = (req, response) => {
+    controllerDeleteAllProductsFromCart = async (req, res, next) => {
         try{
-            if(req.params.id_cart){
-                this.#container.getItemByID(req.params.id_cart).then((cart)=>{
-                    if(!cart){    
-                        response.status(404);      
-                        response.json({ mensaje: `no se encontró el carrito con el id ${req.params.id_cart}` });
-                    }
-                    else{
-                        productController.getContainer().getItemByID(req.body.id_prod)
-                        .then((product)=>{
-                            if(product !== null){
-                                let productCreated = new Product( product.title, product.price, product.thumbnail, req.body.id_prod)
-                                this.#container.getItemByID(req.params.id_cart).then((cart)=>{
-                                    let parsedProducts = []
-                                    cart.products.forEach((listedProduct)=>{
-                                        parsedProducts.push(new Product( listedProduct.title, listedProduct.price, listedProduct.thumbnail, listedProduct.id))
-                                    })
-                                    let cartItem = new Cart(parsedProducts, req.params.id_cart);
-                                    cartItem.addProduct(productCreated);
-                                    this.#container.modifyByID(req.params.id_cart, cartItem.toDTO()).then(()=>{
-                                        this.#container.getItemByID(req.params.id_cart).then((cartUpdated)=>{
-                                            response.status(200);
-                                            response.json(cartUpdated.products);
-                                        }).catch(()=>{
-                                            response.status(500);      
-                                            response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
-                                        });
-                                    }).catch(()=>{
-                                        response.status(501);      
-                                        response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
-                                    });
-                                }).catch(()=>{
-                                    response.status(500);      
-                                    response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
-                                });
-                            }
-                            else{    
-                                response.status(404);      
-                                response.json({ mensaje: `no se encontró el item con el id ${req.body.id_prod}` });
-                            }
-                        }).catch(()=>{
-                            response.status(404);      
-                            response.json({ mensaje: `no se encontró el item con el id ${req.body.id_prod}` });
-                        });
-                    }
-                }).catch(()=>{
-                    response.status(500);      
-                    response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
-                });
-            }
-            else{
-                response.status(404);      
-                response.json({ mensaje: `el id ${req.params.id_cart} es inválido` });
-            }
+            await cartService.deleteAllProductsFromCart(req.params.id_cart);
+            logger.info(`DELETE REQUEST successfull for products in cart ID ${req.params.id_cart}`);
+            res.status(200).json({message: `el carrito ${req.params.id_cart} fue vaciado.`})
         }
-        catch{
-            response.status(500);      
-            response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
+        catch(error){
+            next(error)
         }
     }
-    controllerDeleteAllProductsFromCart = (req, response) => {
+    controllerDeleteProductFromCartByID = async (req, res, next) => {
         try{
-            this.#container.getItemByID(req.params.id_cart).then((cart)=>{
-                if(cart){
-                    this.#container.modifyByID(req.params.id_cart, {products: []}).then(()=>{
-                        response.status(200);
-                        response.json({mensaje: `el carrito ${req.params.id_cart} fue vaciado.`}) 
-                    }).catch(()=>{
-                        response.status(502);
-                        response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
-                    });
-                }
-                else{
-                    response.status(404);      
-                    response.json({ mensaje: `no se encontró el carrito con el id ${req.params.id_cart}` });
-                }
-            }).catch(()=>{
-                response.status(404);      
-                response.json({ mensaje: `no se encontró el carrito con el id ${req.params.id_cart}` });
-            });
+            await cartService.deleteProductFromCartByID(req.params.id_cart, req.params.id_prod);
+            logger.info(`DELETE REQUEST successfull for product ${req.params.id_prod} in cart ID ${req.params.id_cart}`);
+            res.status(200).json({message: `el item ${req.params.id_prod} del carrito ${req.params.id_cart} fue eliminado.`}) 
         }
-        catch{
-            response.status(500);
-            response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
-        }
-    }
-    controllerDeleteProductFromCartByID = (req, response) => {
-        try{
-            this.#container.getItemByID(req.params.id_cart).then((cartFound)=>{
-                if(cartFound){
-                    //check if cart has product with matching id
-                    let parsedProducts = []
-                    cartFound.products.forEach((listedProduct)=>{
-                        parsedProducts.push(new Product( listedProduct.title, listedProduct.price, listedProduct.thumbnail, listedProduct.id))
-                    })
-                    let cart = new Cart(parsedProducts, req.params.id_cart);
-                    if(cart.hasProduct(req.params.id_prod)){
-                        cart.deleteProduct(req.params.id_prod);
-                        this.#container.modifyByID(req.params.id_cart, cart.toDTO()).then(()=>{
-                            response.status(200);
-                            response.json({mensaje: `el item ${req.params.id_prod} del carrito ${req.params.id_cart} fue eliminado.`}) 
-                        }).catch(()=>{
-                            response.status(500);
-                            response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
-                        });
-                    }
-                    else{
-                        response.status(404);      
-                        response.json({ mensaje: `no se encontró el item ${req.params.id_prod} en el carrito ${req.params.id_cart}` });
-                    }
-                }
-                else{
-                    response.status(404);      
-                    response.json({ mensaje: `no se encontró el carrito con el id ${req.params.id_cart}` });
-                }
-            }).catch(()=>{
-                response.status(500);
-                response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
-            });
-        }
-        catch{
-            response.status(500);
-            response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
+        catch(error){
+            next(error)
         }
     }
 }
-const cartController = new cartControllerClass
+const cartController = new CartControllerClass
 Object.freeze(cartController);
 export default cartController;

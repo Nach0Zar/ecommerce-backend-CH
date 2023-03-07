@@ -1,4 +1,4 @@
-import { firestoreDatabase } from '../../db/firestoreClient.js';
+import { firestoreDatabase } from '../db/firestoreClient.js';
 import Container from './container.js';
 class FirestoreContainer extends Container{
     constructor(dataType) {
