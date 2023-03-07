@@ -1,178 +1,58 @@
-import Product from '../models/classes/product.js';
-import { PERSISTENCIA } from '../db/config/config.js';
-import FirestoreContainer from '../models/containers/firestoreContainer.js';
-import MongoDBContainer from '../models/containers/mongoDBContainer.js';
-import MemoryFSContainer from '../models/containers/MemoryFSContainer.js';
-class productControllerClass{
-    #container
-    constructor(){
-        switch (PERSISTENCIA) {
-            case 'mongodb': 
-                this.#container = new MongoDBContainer("products")
-                break
-            case 'firebase':
-                this.#container = new FirestoreContainer("products")
-                break
-            default:
-                this.#container = new MemoryFSContainer("products")
-                break
-        }
-    }
-    controllerGetAllProducts = (req, response) => {
+import productService from '../services/productService.js';
+import logger from '../utils/logger.js';
+
+class ProductControllerClass{
+    controllerGetAllProducts = async (req, res, next) => {
         try{
-            this.#container.getAllItems()
-            .then((data)=>{
-                if(!data){
-                    response.status(404);      
-                    response.json({ mensaje: `No se registran productos cargados.` });
-                }
-                else{
-                    response.status(200);
-                    response.json(data);
-                }
-            }).catch(()=>{
-                response.status(500);      
-                response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
-            });
+            let items = await productService.getAllItems();
+            logger.info(`GET REQUEST successfull for all products`);
+            res.status(200).json(items);
         }
-        catch{
-            response.status(500);      
-            response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
+        catch(error){
+            next(error);
         }
     }
-    controllerGetProductByID = (req, response) => {
+    controllerGetProductByID = async (req, res, next) => {
         try{
-            if(req.params.id){
-                this.#container.getItemByID(req.params.id)
-                .then((item)=>{
-                    if(!item){    
-                        response.status(404);      
-                        response.json({ mensaje: `no se encontró el producto con el id ${req.params.id}` });
-                    }
-                    else{
-                        let product = new Product(item.title, item.price, item.thumbnail, item.id)
-                        response.status(200);
-                        response.json(product);
-                    }
-                }).catch(()=>{
-                    response.status(404);      
-                    response.json({ mensaje: `el id ${req.params.id} es inválido` });
-                })
-            }
-            else{
-                response.status(404);      
-                response.json({ mensaje: `el id ${req.params.id} es inválido` });
-            }
+            let item = await productService.getProduct(req.params.id);
+            logger.info(`GET REQUEST successfull for product ${req.params.id}`);
+            res.status(200).json(item)
         }
-        catch{
-            response.status(500);      
-            response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
+        catch(error){
+            next(error);
         }
     }
-    controllerPutProductByID = (req, response) => {
+    controllerPutProductByID = async (req, res, next) => {
         try{
-            if(req.params.id){
-                this.#container.getItemByID(req.params.id)
-                .then((item)=>{
-                    if(!item){    
-                        response.status(404);      
-                        response.json({ mensaje: `no se encontró el producto con el id ${req.params.id}` });
-                    }
-                    else{
-                        this.#container.modifyByID(req.params.id, req.body)
-                        .then((changed)=>{
-                            if(changed){
-                                this.#container.getItemByID(req.params.id)
-                                .then((item)=>{
-                                    response.status(200);
-                                    response.json(item);
-                                }).catch(()=>{
-                                    response.status(500);      
-                                    response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
-                                });
-                            }
-                            else{
-                                response.status(500);      
-                                response.json({ mensaje: `Ningun elemento fue cambiado.` });
-                            }
-                        }).catch(()=>{
-                            response.status(500);      
-                            response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
-                        });
-                    }
-                }).catch(()=>{
-                    response.status(404);      
-                    response.json({ mensaje: `el id ${req.params.id} es inválido` });
-                })
-            }
-            else{
-                response.status(404);      
-                response.json({ mensaje: `el id ${req.params.id} es inválido` });
-            }
+            let item = await productService.modifyProductByID(req.params.id, req.body);
+            logger.info(`PUT REQUEST successfull for product ${req.params.id}`);
+            res.status(200).json(item)
         }
-        catch{
-            response.status(500);      
-            response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
+        catch(error){
+            next(error);
         }
     }
-    controllerPostProduct = (req, response) => {
+    controllerPostProduct = async (req, res, next) => {
         try{
-            let newProduct = new Product(req.body.title, req.body.price, req.body.thumbnail);
-            this.#container.save(newProduct).then(()=>{
-                response.status(200);
-                response.json({mensaje: `el item ${req.body.title} fue agregado.`}) 
-            }).catch(()=>{
-                response.status(500);
-                response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
-            })
+            let productID = await productService.createProduct(req.body.title, req.body.price, req.body.thumbnail);
+            logger.info(`POST REQUEST successfull for product ${productID}`);
+            res.status(200).json({message: `The item with ID ${productID} was added to the catalog.`})
         }
-        catch{
-            response.status(500);
-            response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
+        catch(error){
+            next(error);
         }
     }
-    controllerDeleteProductByID = (req, response) => {
+    controllerDeleteProductByID = async (req, res, next) => {
         try{
-            if(req.params.id){
-                this.#container.getItemByID(req.params.id).then((item)=>{
-                    if(!item){
-                        response.status(404);      
-                        response.json({ mensaje: `no se encontró el producto con el id ${req.params.id}` });
-                    } 
-                    else{   
-                        this.#container.deleteByID(req.params.id).then((deleted)=>{
-                            if(deleted){
-                                response.status(200);    
-                                response.json({mensaje: `el item con el id ${req.params.id} fue eliminado.`})
-                            }
-                            else{
-                                response.status(500);    
-                                response.json({mensaje: `el item con el id ${req.params.id} no fue eliminado.`})
-                            }
-                        }).catch(()=>{
-                            response.status(500);      
-                            response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
-                        });
-                    }
-                }).catch(()=>{
-                    response.status(404);      
-                    response.json({ mensaje: `no se encontró el producto con el id ${req.params.id}` });
-                });
-            }
-            else{
-                response.status(404);      
-                response.json({ mensaje: `el id ${req.params.id} es inválido.` });
-            }
+            await productService.deleteProduct(req.params.id);
+            logger.info(`DELETE REQUEST successfull for product ${req.params.id}`);
+            res.status(200).json({message: `The item with ID ${req.params.id} was deleted from the catalog.`})
         }
-        catch{
-            response.status(500);      
-            response.json({ mensaje: `Hubo un problema interno del servidor, reintentar más tarde.` });
+        catch(error){
+            next(error);
         }
-    }
-    getContainer(){
-        return this.#container;
     }
 }
-const productController = new productControllerClass();
+const productController = new ProductControllerClass();
 Object.freeze(productController);
 export default productController;
