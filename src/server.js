@@ -8,6 +8,8 @@ import config from './config/config.js';
 import cookieParser from 'cookie-parser';
 import errorHandler from './middlewares/errorHandler.js';
 import logger from './utils/logger.js';
+import cluster from 'cluster';
+import Server from './utils/server.js';
 
 const app = express();
 //middlewares
@@ -34,9 +36,26 @@ app.all('*', (req, res) => {
 })
 //errorHandler
 app.use(errorHandler)
-//server port listener
-const port = process.env.PORT ?? 8080;
-const server = app.listen(port,()=>{
-    console.log(`Successfully connected to port ${server.address().port}`)
-});
-server.on("error", err => logger.error(`${err}`));
+//server configuration
+if (config.MODE === 'cluster') {
+    if (cluster.isPrimary) {
+        logger.info('Execution mode: CLUSTER')
+        logger.info(`Primary processs: pid ${process.pid}`)
+        for (let i = 0; i < config.CPUs; i++) {
+            cluster.fork();
+        }
+        cluster.on('exit', () => {
+            cluster.fork();
+        })
+    } else {
+        logger.info(`Secondary process: pid ${process.pid}`)
+        const server = new Server(app)
+        server.conectar({ puerto: config.PORT })
+    }
+} else {
+    const server = new Server(app)
+    server.conectar({ puerto: config.PORT })
+    logger.info(`Successfully connected to port ${config.PORT}`)
+}
+app.on("error", err => logger.error(`${err}`));
+//node ./src/server.js -p=8080 -m=cluster
