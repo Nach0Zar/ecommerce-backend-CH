@@ -1,8 +1,8 @@
 import fs from 'fs';
 import Container from './container.js';
 import * as url from 'url';
-import Product from "../classes/product.js";
-import Cart from "../classes/cart.js";
+import Product from "../models/product.js";
+import Cart from "../models/cart.js";
 
 class MemoryFSContainer extends Container{
     constructor(dataType){

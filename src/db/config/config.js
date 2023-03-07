@@ -1,7 +1,7 @@
-const cnxStrLocal = 'mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1.6.1'
+import config from '../../config/config.js';
 
-export const CNX_STR = cnxStrLocal
+export const CNX_STR = config.mongoRemote.cnxStr //'mongodb+srv://nachocoderhouse:passwordpassword@cluster0.hmqkdpj.mongodb.net/coderhouse'
 
-export const DB_NAME = 'coderhouse'
+export const DB_NAME = config.mongoRemote.dbName
 //persistencia en mongodb, firebase o memoria/fs
-export const PERSISTENCIA = 'firebase'
+export const PERSISTENCIA = 'mongodb'
