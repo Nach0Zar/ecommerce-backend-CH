@@ -6,8 +6,8 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({path:path.join(__dirname+'/../.env')});
-const argv = parseArgs(process.argv.slice(2), { alias: { p: 'port', m: 'mode', e: 'env' }, default: { port: 8080, mode: 'fork', env: 'development'} })
-const EXPIRY_TIME = 10000//60 * 10 * 1000
+const argv = parseArgs(process.argv.slice(2), { alias: { p: 'port', m: 'mode', e: 'env' }, default: { port: 8080, mode: 'fork', env: 'development'} });
+const EXPIRY_TIME = 60 * 10 * 1000;
 const sessionConfig = {
     //mongo sessions
     // store: MongoStore.create({
@@ -23,7 +23,7 @@ const sessionConfig = {
     resave: false,
     saveUninitialized: false,
     EXPIRY_TIME: EXPIRY_TIME
-}
+};
 const NODEMAILER_CONFIG = {
     host: 'smtp.gmail.com',
     port: 587,
@@ -31,7 +31,7 @@ const NODEMAILER_CONFIG = {
         user: process.env.NODEMAILER_USER,
         pass: process.env.NODEMAILER_PASS
     }
-}
+};
 const config = {
     PORT: argv.port,
     MODE: argv.mode,
@@ -56,5 +56,5 @@ const config = {
     },
     NODEMAILER_CONFIG: NODEMAILER_CONFIG,
     MAIL_ADMIN: process.env.MAIL_ADMIN
-}
+};
 export default config;
