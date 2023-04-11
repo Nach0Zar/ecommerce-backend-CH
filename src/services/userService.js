@@ -6,6 +6,8 @@ import jwt from 'jsonwebtoken';
 import mailer from '../utils/mailer.js';
 import Service from "./service.js";
 import cartService from "./cartService.js";
+import orderService from "./orderService.js";
+//TODO CREATE REPOSITORY
 
 class UserService extends Service{
     constructor(){
@@ -97,7 +99,27 @@ class UserService extends Service{
         })
         return productsBougth;
     }
+    addItemToCart = async (email, productID) => {
+        if(!this.checkExistingUser(email)){
+            throw new Error(`No user was found with the email ${email}`, 'NOT_FOUND');
+        }
+        let user = await this.container.getItemByCriteria({email: email})
+        let productAdded = (await cartService.addProductToCart(user.cart, productID)).map((product)=>product.title);
+        return productAdded;
+    }
+    getUserOrders = async (email) => {
+        if(!this.checkExistingUser(email)){
+            throw new Error(`No user was found with the email ${email}`, 'NOT_FOUND');
+        }
+        let user = await this.container.getItemByCriteria({email: email})
+        let userOrders = [];
+        user.orders.foreach(async (orderID) => {
+            userOrders += await orderService.getOrder(orderID)
+        })
+        return userOrders;
+    }
 }
+//TODO SINGLETON
 const userService = new UserService();
 Object.freeze(userService);
 export default userService;

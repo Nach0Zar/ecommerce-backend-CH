@@ -14,6 +14,7 @@ class MailerClass {
         }
     }
 }
+//TODO SINGLETON
 const mailer = new MailerClass(config.NODEMAILER_CONFIG);
 Object.freeze(mailer);
 export default mailer;

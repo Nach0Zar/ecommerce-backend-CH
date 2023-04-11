@@ -3,6 +3,7 @@ import Product from "../models/product.js";
 import Service from "./service.js";
 import productValidation from "../validations/productValidation.js";
 import productDataValidation from "../validations/productDataValidation.js";
+//TODO CREATE REPOSITORY
 
 class ProductService extends Service{
     constructor(){
@@ -69,6 +70,7 @@ class ProductService extends Service{
         }
     }
 }
+//TODO SINGLETON
 const productService = new ProductService();
 Object.freeze(productService);
 export default productService;
