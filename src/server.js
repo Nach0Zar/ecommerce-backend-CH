@@ -35,7 +35,7 @@ app.all('*', (req, res) => {
     res.status(404).json({error:-2, mensaje: "Ruta no implementada"})
 })
 //errorHandler
-app.use(errorHandler)
+app.use(errorHandler);
 //server configuration
 if (config.MODE === 'cluster') {
     if (cluster.isPrimary) {
@@ -58,4 +58,3 @@ if (config.MODE === 'cluster') {
     logger.info(`Successfully connected to port ${config.PORT}`)
 }
 app.on("error", err => logger.error(`${err}`));
-//node ./src/server.js -p=8080 -m=cluster

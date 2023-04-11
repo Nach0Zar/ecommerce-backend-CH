@@ -1,5 +1,6 @@
 import { firestoreDatabase } from '../db/firestoreClient.js';
 import Container from './container.js';
+//TODO remove
 class FirestoreContainer extends Container{
     constructor(dataType) {
         super(dataType);
@@ -15,7 +16,7 @@ class FirestoreContainer extends Container{
     async getItemByID(idItem){
         const ref = this.items.doc(idItem)
         let doc = await ref.get()
-        if(!doc.data()){//to check if no item was found matching ID
+        if(!doc.data()){
             return null;
         }
         return this.asObj(doc);

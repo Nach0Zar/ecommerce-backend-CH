@@ -7,13 +7,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({path:path.join(__dirname+'/../.env')});
 const argv = parseArgs(process.argv.slice(2), { alias: { p: 'port', m: 'mode', e: 'env' }, default: { port: 8080, mode: 'fork', env: 'development'} });
+//TODO dev mongolocal --- prod mongoatlas
 const EXPIRY_TIME = 60 * 10 * 1000;
 const sessionConfig = {
-    //mongo sessions
-    // store: MongoStore.create({
-    //     mongoUrl: `process.env.MONGODB_CNXSTRING`,
-    //     ttl: 60 * 10
-    // }),
     cookie: {
         httpOnly: false,
         secure: false,
@@ -55,6 +51,7 @@ const config = {
         connection: process.env.MYSQL
     },
     NODEMAILER_CONFIG: NODEMAILER_CONFIG,
-    MAIL_ADMIN: process.env.MAIL_ADMIN
+    MAIL_ADMIN: process.env.MAIL_ADMIN,
+    ADMIN_MAIL_LIST: process.env.ADMIN_MAIL_LIST
 };
 export default config;

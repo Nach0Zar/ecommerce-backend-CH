@@ -4,6 +4,8 @@ class Product{
     price
     thumbnail
     id
+    //TODO thumbnail cambiar por image
+    //TODO description
     constructor(title, price, thumbnail, id = randomUUID()){
         this.title = title
         this.price = +price

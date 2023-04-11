@@ -1,7 +1,9 @@
 import { randomUUID } from 'crypto';
-class Cart{
+class Order{
     id
     products
+    //TODO timestamp
+    //TODO idClient
     constructor(products, id = randomUUID()){
         this.products = products;
         this.id = id;
@@ -19,7 +21,7 @@ class Cart{
         this.id = id;
     }
     addProduct(product){
-        //TODO products + cantidad prods: [ { idProd: 1, cant: 2 }, { idProd: 2, cant: 5} ]
+        //TODO products + cantidad prods: [ { prod: { id, name, description, price, image, }, cant: 2 }, { prod: { id, name, description, price, image, }, cant: 1 } ]
         this.products.push(product);
     }
     deleteProduct(productID){
@@ -41,8 +43,8 @@ class Cart{
         };
         return false;
     }
-    async modify(cart){
-        await this.setProducts(cart.products);
+    async modify(order){
+        await this.setProducts(order.products);
     }
     toDTO(){
         let productsDTO = []
@@ -58,8 +60,8 @@ class Cart{
         }
         return dto
     }
-    cleanCart(){
+    cleanOrder(){
         this.products = [];
     }
 }
-export default Cart;
+export default Order;

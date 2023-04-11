@@ -20,7 +20,7 @@ class Logger {
         this.logger.error(message)
     }
 }
-
+//TODO SINGLETON
 const logger = new Logger();
 Object.freeze(logger);
 export default logger;

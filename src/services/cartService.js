@@ -3,6 +3,7 @@ import Service from "./service.js";
 import Cart from "../models/cart.js";
 import productService from "./productService.js";
 import productAndCartIDsValidation from "../validations/productAndCartIDsValidation.js";
+//TODO CREATE REPOSITORY
 
 class CartService extends Service{
     constructor(){
@@ -82,6 +83,7 @@ class CartService extends Service{
         throw new Error(`No product was found in the cart`, 'NOT_FOUND');
     }
 }
+//TODO SINGLETON
 const cartService = new CartService();
 Object.freeze(cartService);
 export default cartService;

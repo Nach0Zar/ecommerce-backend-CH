@@ -1,4 +1,5 @@
 class Container{
+    //TODO remove
     constructor(dataType){
         this.dataType = dataType;
     }
