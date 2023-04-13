@@ -1,13 +1,13 @@
 import { Error } from "../error/error.js";
-import Service from "./service.js";
+import MongoDBContainer from "../containers/mongoDBContainer.js";
 import Cart from "../models/cart.js";
 import productService from "./productService.js";
 import productAndCartIDsValidation from "../validations/productAndCartIDsValidation.js";
 //TODO CREATE REPOSITORY
 
-class CartService extends Service{
+class CartService{
     constructor(){
-        super("carts")
+        this.container = new MongoDBContainer("carts")
     }
     getCartProducts = async (cartID) => {
         let cart = await this.container.getItemByID(cartID)

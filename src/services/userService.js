@@ -4,14 +4,14 @@ import { Strategy as LocalStrategy } from 'passport-local';
 import config from "../config/config.js";
 import jwt from 'jsonwebtoken';
 import mailer from '../utils/mailer.js';
-import Service from "./service.js";
+import MongoDBContainer from "../containers/mongoDBContainer.js";
 import cartService from "./cartService.js";
 import orderService from "./orderService.js";
 //TODO CREATE REPOSITORY
 
-class UserService extends Service{
+class UserService{
     constructor(){
-        super("users")
+        this.container = new MongoDBContainer("users")
         passport.use('local-login', new LocalStrategy(
             {},
             (username, password, done) => {

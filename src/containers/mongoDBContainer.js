@@ -1,11 +1,6 @@
 import { mongoDatabase } from '../db/mongoClient.js';
-import Container from './container.js';
-import { ObjectID } from 'mongodb';
-//TODO SOLO MONGO
-class MongoDBContainer extends Container {
-    //TODO remover extend ya que solo hay mongoDBContainer
+class MongoDBContainer {
     constructor(dataType) {
-        super(dataType);
         this.items = mongoDatabase.collection(dataType);
     }
     async save(object) {

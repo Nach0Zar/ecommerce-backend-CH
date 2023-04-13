@@ -1,10 +1,10 @@
 import { Error } from "../error/error.js";
-import Service from "./service.js";
+import MongoDBContainer from "../containers/mongoDBContainer.js";
 //TODO CREATE REPOSITORY
 
-class OrderService extends Service{
+class OrderService{
     constructor(){
-        super("orders")
+        this.container = new MongoDBContainer("orders")
     }
     getOrder = async (id) => {
         let user = await this.container.getItemByID(id)
