@@ -1,13 +1,13 @@
 import { Error } from "../error/error.js";
 import Product from "../models/product.js";
-import Service from "./service.js";
+import MongoDBContainer from "../containers/mongoDBContainer.js";
 import productValidation from "../validations/productValidation.js";
 import productDataValidation from "../validations/productDataValidation.js";
 //TODO CREATE REPOSITORY
 
-class ProductService extends Service{
+class ProductService{
     constructor(){
-        super("products")
+        this.container = new MongoDBContainer("products")
     }
     getProduct = async (productID) => {
         if(!(await this.checkExistingProduct(productID))){
