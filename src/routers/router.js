@@ -2,6 +2,7 @@ import express from 'express';
 import productController from '../controllers/productController.js';
 import userController from '../controllers/userController.js'
 import cartController from '../controllers/cartController.js';
+import orderController from '../controllers/orderController.js';
 import passport from 'passport';
 import checkUserLogged from '../middlewares/checkUserLogged.js';
 import userIsAdmin from '../middlewares/userIsAdmin.js'
@@ -20,15 +21,10 @@ routerAPI.post('/products', checkUserLogged, userIsAdmin, productController.cont
 routerAPI.put('/products/:id', checkUserLogged, userIsAdmin, productController.controllerPutProductByID);
 routerAPI.delete('/products/:id', checkUserLogged, userIsAdmin, productController.controllerDeleteProductByID);
 //shopping cart
-// routerAPI.get('/shoppingcart/:id_cart/products',cartController.controllerGetCartProducts);
-// routerAPI.post('/shoppingcart', checkUserLogged, cartController.controllerPostCart);
-// routerAPI.post('/shoppingcart/:id_cart/products', checkUserLogged, cartController.controllerPostProductToCart);
-// routerAPI.delete('/shoppingcart/:id_cart', checkUserLogged, cartController.controllerDeleteAllProductsFromCart);
-// routerAPI.delete('/shoppingcart/:id_cart/products/:id_prod', checkUserLogged, cartController.controllerDeleteProductFromCartByID);
 routerAPI.get('/shoppingcartproducts',checkUserLogged, cartController.controllerGetCartProducts);
 routerAPI.post('/shoppingcartproducts',checkUserLogged, cartController.controllerPostProductToCart);
 routerAPI.delete('/shoppingcartproducts/:id_prod',checkUserLogged, cartController.controllerDeleteProductFromCart);
 //orders
-// routerAPI.get('/orders',checkUserLogged, orderController.controllerGetUserOrders);
-// routerAPI.post('/orders',checkUserLogged, orderController.controllerPostUserPurchaseCart);
+routerAPI.get('/orders',checkUserLogged, orderController.controllerGetOrders);
+routerAPI.post('/orders',checkUserLogged, orderController.controllerPostPurchaseCart);
 export default routerAPI;

@@ -3,7 +3,7 @@ import config from '../config/config.js';
 
 let instance = null;
 
-class MailerClass {
+class Mailer{
     constructor() {
         this.nodemailerClient = createTransport(config.NODEMAILER_CONFIG)
     }
@@ -16,10 +16,10 @@ class MailerClass {
     }
     static getInstance(){
         if(!instance){
-            instance = new MailerClass();
+            instance = new Mailer();
         }
         return instance;
     }
 }
-export default MailerClass.getInstance();
+export default Mailer.getInstance();
 

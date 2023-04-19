@@ -3,7 +3,7 @@ import logger from '../utils/logger.js';
 
 let instance = null;
 
-class ProductControllerClass{
+class ProductController{
     controllerGetAllProducts = async (req, res, next) => {
         try{
             let items = await productService.getAllItems();
@@ -56,9 +56,9 @@ class ProductControllerClass{
     }
     static getInstance(){
         if(!instance){
-            instance = new ProductControllerClass();
+            instance = new ProductController();
         }
         return instance;
     }
 }
-export default ProductControllerClass.getInstance();
+export default ProductController.getInstance();
