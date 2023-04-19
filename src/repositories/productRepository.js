@@ -30,7 +30,7 @@ class ProductsRepository {
     async getItemByCriteria(criteria) {
         const dtos = await this.#dao.getItemByCriteria(criteria)
         if (!dtos) return null
-        if (dtos.length > 1) {
+        if (dtos.length === 1) {
             return new Product(dtos)
         }
         else{
