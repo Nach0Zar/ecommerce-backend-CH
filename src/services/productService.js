@@ -1,20 +1,19 @@
 import { Error } from "../error/error.js";
 import Product from "../models/product.js";
-import MongoDBContainer from "../containers/mongoDBContainer.js";
 import productDataValidation from "../validations/productDataValidation.js";
-//TODO CREATE REPOSITORY + RETURN DTOs
+import productRepository from "../repositories/productRepository.js";
+//TODO RETURN DTOs
 let instance = null;
 
 class ProductService{
     constructor(){
-        this.container = new MongoDBContainer("products")
+        this.container = productRepository;
     }
     getProduct = async (productID) => {
         if(!(await this.checkExistingProduct(productID))){
             throw new Error(`No product was found matching ID ${productID}`, 'BAD_REQUEST');
         }
-        let productFound = await this.container.getItemByID(productID);
-        return new Product(productFound.title, productFound.price, productFound.thumbnail, productFound.id);
+        return await this.container.getItemByID(productID);
     }
     checkExistingProduct = async (productID) => {
         let productFound = await this.container.getItemByID(productID);
@@ -22,11 +21,14 @@ class ProductService{
     }
     getAllItems = async () => {
         let items = await this.container.getAllItems();
-        let parsedProducts = await this.parseProducts(items);
-        if(parsedProducts < 1){
+        if(items < 1){
             throw new Error(`No product was found`, 'BAD_REQUEST');
         }
-        return parsedProducts;
+        let itemsDTO = [];
+        items.forEach(product => {
+            itemsDTO.push(product.toDTO())
+        });
+        return itemsDTO;
     }
     modifyProductByID = async (productID, productNewData) => {
         if(!(await this.checkExistingProduct(productID))){

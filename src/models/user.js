@@ -7,7 +7,7 @@ class User{
     lastname
     image
     cart
-    constructor(email, password, name, lastname, image, cart, id = randomUUID()){
+    constructor({email, password, name, lastname, image, cart, id = randomUUID()}){
         this.email = email;
         this.password = password;
         this.name = name;

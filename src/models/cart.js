@@ -2,7 +2,7 @@ import { randomUUID } from 'crypto';
 class Cart{
     id
     products
-    constructor(products, id = randomUUID()){
+    constructor({products, id = randomUUID()}){
         this.products = products;
         this.id = id;
     }
