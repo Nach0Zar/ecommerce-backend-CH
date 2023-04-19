@@ -1,17 +1,17 @@
 import { Error } from "../error/error.js";
-import passport from 'passport';
-import { Strategy as LocalStrategy } from 'passport-local';
 import config from "../config/config.js";
 import jwt from 'jsonwebtoken';
 import mailer from '../utils/mailer.js';
-import MongoDBContainer from "../containers/mongoDBContainer.js";
+import passport from 'passport';
+import { Strategy as LocalStrategy } from 'passport-local';
+import userRepository from "../repositories/userRepository.js";
 import cartService from "./cartService.js";
 //TODO CREATE REPOSITORY + RETURN DTOs
 let instance = null;
 
 class UserService{
     constructor(){
-        this.container = new MongoDBContainer("users")
+        this.container = userRepository
         passport.use('local-login', new LocalStrategy(
             {},
             (username, password, done) => {
@@ -39,14 +39,14 @@ class UserService{
     }
     registerUser = async (information) => {
         let cartID = await cartService.createCart();
-        const user = {
-            firstname: information.firstname,
+        let user = new User({
+            name: information.name,
             lastname: information.lastname,
             email: information.username,
-            profileImage: "blank",
+            image: information.image,
             password: jwt.sign(information.password1, config.SESSION.secret),
             cart: cartID
-        }
+        })
         return this.container.save(user).then((userID)=>{
             mailer.send({
                 to: config.MAIL_ADMIN,
@@ -59,11 +59,11 @@ class UserService{
         });
     }
     loginUser = async (email) => {
-        let item = await this.container.getItemByCriteria({email: email})
-        if(!item){
+        let user = await this.container.getItemByCriteria({email: email})
+        if(!user){
             throw new Error(`The server could not validate the credentials`, 'FORBIDDEN')
         }
-        return item.email;
+        return user.getEmail();
     }
     getUserInformation = async (email) => {
         let user = await this.container.getItemByCriteria({email: email})
