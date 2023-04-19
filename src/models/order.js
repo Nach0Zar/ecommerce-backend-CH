@@ -4,7 +4,7 @@ class Order{
     idClient
     products
     timestamp
-    constructor(products, idClient, timestamp, id = randomUUID()){
+    constructor({products, idClient, timestamp, id = randomUUID()}){
         this.products = products;
         this.idClient = idClient;      
         this.timestamp = timestamp;  
