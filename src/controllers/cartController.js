@@ -1,6 +1,5 @@
 import cartService from '../services/cartService.js';
 import logger from '../utils/logger.js';
-//TODO REMOVER SI NO SE USA
 class CartControllerClass{
     controllerGetCartProducts = async (id) => {
         try{
