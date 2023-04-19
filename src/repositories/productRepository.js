@@ -16,8 +16,7 @@ class ProductsRepository {
         return parsedProducts;
     }
     async save(product) {
-        const res = await this.#dao.save(product)
-        return res
+        return await this.#dao.save(product.toDTO());
     }
     async getItemByID(id) {
         const dto = await this.#dao.getItemByID(id)
@@ -39,7 +38,13 @@ class ProductsRepository {
         }
     }
     async modifyByID(id, newProduct){
-        await this.#dao.modifyByID(id, newProduct);
+        let updateInfo = {
+            title: newProduct.getTitle(),
+            price: newProduct.getPrice(),
+            image: newProduct.getImage(),
+            description: newProduct.getDescription()
+        }
+        await this.#dao.modifyByID(id, updateInfo);
     }
     async deleteById(id){
         this.#dao.deleteById(id)

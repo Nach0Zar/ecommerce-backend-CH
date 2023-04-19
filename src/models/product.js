@@ -3,6 +3,7 @@ class Product{
     #title
     #price
     #image
+    #description
     #id
     constructor({title, price, image, description, id = randomUUID()}){
         this.#title = title;
@@ -40,6 +41,12 @@ class Product{
     }
     setID(id){
         this.#id = id;
+    }
+    modify({title, price, image, description}){
+        this.setTitle(title);
+        this.setPrice(price);
+        this.setImage(image);
+        this.setDescription(description);
     }
     toDTO(){
         const dto = {

@@ -35,18 +35,22 @@ class ProductService{
             throw new Error(`No product was found matching ID ${productID}`, 'BAD_REQUEST');
         }
         let productFound = await this.container.getItemByID(productID);
-        let parsedProduct = new Product(productFound.title, +productFound.price, productFound.thumbnail, productFound.id)
-        parsedProduct.modify(productNewData);
+        productFound.modify(productNewData);
         if(await this.container.modifyByID(productID, productNewData)){
-            return parsedProduct;
+            return productFound;
         }
         else{
             throw new Error(`There was an error modifing the product`, 'INTERNAL_ERROR') 
         } 
     }
-    createProduct = async (title, price, thumbnail) => {
-        productDataValidation(title, price, thumbnail);
-        let newProduct = new Product(title, +price, thumbnail);
+    createProduct = async (title, price, image, description) => {
+        productDataValidation(title, price, image, description);
+        let newProduct = new Product({
+            title: title, 
+            price: +price, 
+            image: image,
+            description: description}
+        );
         let productID = await this.container.save(newProduct);
         if(!productID){
             throw new Error(`There was an error creating the product`, 'INTERNAL_ERROR') 
