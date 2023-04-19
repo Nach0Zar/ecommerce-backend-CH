@@ -5,7 +5,7 @@ import logger from '../utils/logger.js';
 
 let instance = null;
 
-class UserControllerClass{
+class UserController{
     controllerPostRegisterUser = async (req, res, next) => {
         try{
             await registerUserValidation(req);
@@ -43,31 +43,11 @@ class UserControllerClass{
             next(error);
         }
     }
-    controllerPostUserPurchaseCart = async (req, res, next) => {
-        try{
-            let itemsBought = await userService.purchaseCart(req.cookies.email);
-            logger.info(`POST REQUEST successful for purchasing cart items from user ${req.cookies.email}`);
-            res.status(200).json({message: `Cart was successfully purchased! The following products were purchased: ${itemsBought.join(", ")}`});
-        }
-        catch(error){
-            next(error);
-        }
-    }
-    controllerGetUserOrders = async (req, res, next) => {
-        try{
-            let itemsBought = await userService.getUserOrders(req.cookies.email);
-            logger.info(`GET REQUEST successful for getting all orders from user ${req.cookies.email}`);
-            res.status(200).json({message: `Cart was successfully purchased! The following products were purchased: ${itemsBought.join(", ")}`});
-        }
-        catch(error){
-            next(error);
-        }
-    }
     static getInstance(){
         if(!instance){
-            instance = new UserControllerClass();
+            instance = new UserController();
         }
         return instance;
     }
 }
-export default UserControllerClass.getInstance();
+export default UserController.getInstance();

@@ -3,7 +3,7 @@ import logger from '../utils/logger.js';
 
 let instance = null;
 
-class CartControllerClass{
+class CartController{
     controllerGetCartProducts = async (req, res, next) => {
         try{
             let cartInformation = await cartService.getCartProducts(req.cookies.email);
@@ -36,9 +36,9 @@ class CartControllerClass{
     }
     static getInstance(){
         if(!instance){
-            instance = new ProductService();
+            instance = new CartController();
         }
         return instance;
     }
 }
-export default CartControllerClass.getInstance();
+export default CartController.getInstance();
