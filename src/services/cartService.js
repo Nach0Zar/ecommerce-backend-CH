@@ -1,7 +1,7 @@
 import { Error } from "../error/error.js";
-import userService from "./userService.js";
-import MongoDBContainer from "../containers/mongoDBContainer.js";
+import cartRepository from "../repositories/cartRepository.js";
 import Cart from "../models/cart.js";
+import userService from "./userService.js";
 import productService from "./productService.js";
 import productAndEmailsValidation from "../validations/productAndEmailsValidation.js";
 //TODO RETURN DTOs
@@ -9,7 +9,7 @@ let instance = null;
 
 class CartService{
     constructor(){
-        this.container = new MongoDBContainer("carts")
+        this.container = cartRepository;
     }
     getCartProducts = async (userEmail) => {
         let user = await userService.getUserInformation(userEmail);

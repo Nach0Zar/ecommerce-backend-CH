@@ -6,12 +6,12 @@ let instance = null;
 class ProductsRepository {
     #dao
     constructor() {
-        this.#dao = new MongoDBContainer("products")
+        this.#dao = new MongoDBContainer("products");
     }
     parseItems(productsDTOs){
         let parsedProducts = [];
         productsDTOs.foreach((product)=>{
-            parsedProducts.push(new Product(product))
+            parsedProducts.push(new Product(product));
         })
         return parsedProducts;
     }
