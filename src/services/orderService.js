@@ -4,7 +4,7 @@ import orderRepository from "../repositories/orderRepository.js";
 import Order from "../models/order.js";
 import userService from "./userService.js";
 import productService from "./productService.js";
-//TODO RETURN DTOs
+
 let instance = null;
 
 class OrderService{
@@ -16,15 +16,19 @@ class OrderService{
         if(!order){
             throw new Error(`No order was found with the id ${orderID}`, 'NOT_FOUND');
         }            
-        return order;
+        return order.toDTO();
     }
     getUserOrders = async (userEmail) => {
         let user = await userService.getUserInformation(userEmail);
         let orders = await this.container.getItemByCriteria({idClient: user.getId()})
         if(!orders || orders.length == 0){
             throw new Error(`No order was found for the user with the email ${email}`, 'NOT_FOUND');
-        }            
-        return orders;
+        }       
+        let ordersDTO = [];
+        orders.forEach(order => {
+            ordersDTO.push(order.toDTO())
+        });
+        return ordersDTO;
     }
     parseProducts = async (productList = []) => {
         let parsedProducts = [];
@@ -57,7 +61,7 @@ class OrderService{
             subject: `Purchase order processed!`,
             text: `Products purchased: ${productsBougthNames.join(", ")}`
         })
-        return order;
+        return order.toDTO();
     }
     static getInstance(){
         if(!instance){

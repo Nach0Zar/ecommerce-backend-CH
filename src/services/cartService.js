@@ -4,7 +4,7 @@ import Cart from "../models/cart.js";
 import userService from "./userService.js";
 import productService from "./productService.js";
 import productAndEmailsValidation from "../validations/productAndEmailsValidation.js";
-//TODO RETURN DTOs
+
 let instance = null;
 
 class CartService{
@@ -18,7 +18,7 @@ class CartService{
             throw new Error(`No cart was found with the id ${user.cart}`, 'NOT_FOUND');
         }
         return cart.products.map(async (product)=>{
-            return {idProd: await productService.getItemByID(product.idProd), qty: product.qty}
+            return {idProd: await productService.getItemByID(product.idProd).toDTO(), qty: product.qty}
         });
     }
     createCart = async (products = []) => {

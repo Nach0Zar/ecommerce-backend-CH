@@ -2,7 +2,7 @@ import { Error } from "../error/error.js";
 import productRepository from "../repositories/productRepository.js";
 import Product from "../models/product.js";
 import productDataValidation from "../validations/productDataValidation.js";
-//TODO RETURN DTOs
+
 let instance = null;
 
 class ProductService{
@@ -13,7 +13,7 @@ class ProductService{
         if(!(await this.checkExistingProduct(productID))){
             throw new Error(`No product was found matching ID ${productID}`, 'BAD_REQUEST');
         }
-        return await this.container.getItemByID(productID);
+        return await this.container.getItemByID(productID).toDTO();
     }
     checkExistingProduct = async (productID) => {
         let productFound = await this.container.getItemByID(productID);
@@ -37,7 +37,7 @@ class ProductService{
         let productFound = await this.container.getItemByID(productID);
         productFound.modify(productNewData);
         if(await this.container.modifyByID(productID, productNewData)){
-            return productFound;
+            return productFound.toDTO();
         }
         else{
             throw new Error(`There was an error modifing the product`, 'INTERNAL_ERROR') 
