@@ -1,15 +1,15 @@
 import { Error } from "../error/error.js";
+import mailer from "../utils/mailer.js";
+import orderRepository from "../repositories/orderRepository.js";
 import Order from "../models/order.js";
 import userService from "./userService.js";
 import productService from "./productService.js";
-import mailer from "../utils/mailer.js";
-import MongoDBContainer from "../containers/mongoDBContainer.js";
-//TODO CREATE REPOSITORY + RETURN DTOs
+//TODO RETURN DTOs
 let instance = null;
 
 class OrderService{
     constructor(){
-        this.container = new MongoDBContainer("orders")
+        this.container = orderRepository;
     }
     getOrder = async (orderID) => {
         let order = await this.container.getItemByID(orderID)
@@ -20,7 +20,7 @@ class OrderService{
     }
     getUserOrders = async (userEmail) => {
         let user = await userService.getUserInformation(userEmail);
-        let orders = await this.container.getItemByCriteria({idClient: user.id})
+        let orders = await this.container.getItemByCriteria({idClient: user.getId()})
         if(!orders || orders.length == 0){
             throw new Error(`No order was found for the user with the email ${email}`, 'NOT_FOUND');
         }            
@@ -38,7 +38,11 @@ class OrderService{
         let user = await userService.getUserInformation(userEmail);
         let productsBougth = this.parseProducts(await cartService.purchaseCart(user.cart));
         let timestamp = new Date().getTime();
-        let order = new Order(productsBougth, user.id, timestamp);
+        let order = new Order({
+            products: productsBougth, 
+            idClient: user.id, 
+            timestamp: timestamp}
+        );
         let productsBougthNames = [];
         productsBougth.forEach(product => {
             productsBougthNames += product.prod.name;

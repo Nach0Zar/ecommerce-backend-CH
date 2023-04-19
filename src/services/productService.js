@@ -1,7 +1,7 @@
 import { Error } from "../error/error.js";
+import productRepository from "../repositories/productRepository.js";
 import Product from "../models/product.js";
 import productDataValidation from "../validations/productDataValidation.js";
-import productRepository from "../repositories/productRepository.js";
 //TODO RETURN DTOs
 let instance = null;
 
