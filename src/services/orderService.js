@@ -37,7 +37,7 @@ class OrderService{
     purchaseCart = async (userEmail) => {
         let user = await userService.getUserInformation(userEmail);
         let productsBougth = this.parseProducts(await cartService.purchaseCart(user.cart));
-        let timestamp = new Date().getTime();
+        let timestamp = new Date().toLocaleString();
         let order = new Order({
             products: productsBougth, 
             idClient: user.id, 

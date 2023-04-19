@@ -55,7 +55,6 @@ class ProductService{
         if(!productID){
             throw new Error(`There was an error creating the product`, 'INTERNAL_ERROR') 
         }
-        newProduct.setID(productID);
         return productID;
     }
     deleteProduct = async (productID) => {
