@@ -1,6 +1,8 @@
 import productService from '../services/productService.js';
 import logger from '../utils/logger.js';
 
+let instance = null;
+
 class ProductControllerClass{
     controllerGetAllProducts = async (req, res, next) => {
         try{
@@ -52,8 +54,11 @@ class ProductControllerClass{
             next(error);
         }
     }
+    static getInstance(){
+        if(!instance){
+            instance = new ProductControllerClass();
+        }
+        return instance;
+    }
 }
-//TODO SINGLETON
-const productController = new ProductControllerClass();
-Object.freeze(productController);
-export default productController;
+export default ProductControllerClass.getInstance();

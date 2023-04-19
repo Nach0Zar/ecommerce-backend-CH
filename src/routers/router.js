@@ -25,9 +25,9 @@ routerAPI.delete('/products/:id', checkUserLogged, userIsAdmin, productControlle
 // routerAPI.post('/shoppingcart/:id_cart/products', checkUserLogged, cartController.controllerPostProductToCart);
 // routerAPI.delete('/shoppingcart/:id_cart', checkUserLogged, cartController.controllerDeleteAllProductsFromCart);
 // routerAPI.delete('/shoppingcart/:id_cart/products/:id_prod', checkUserLogged, cartController.controllerDeleteProductFromCartByID);
-routerAPI.get('/shoppingcartproducts',checkUserLogged, cartController.controllerGetUserCartInformation);
+routerAPI.get('/shoppingcartproducts',checkUserLogged, cartController.controllerGetCartProducts);
 routerAPI.post('/shoppingcartproducts',checkUserLogged, cartController.controllerPostProductToCart);
-routerAPI.delete('/shoppingcartproducts/:id',checkUserLogged, cartController.controllerDeleteProductFromCartByID);
+routerAPI.delete('/shoppingcartproducts/:id_prod',checkUserLogged, cartController.controllerDeleteProductFromCart);
 //orders
 // routerAPI.get('/orders',checkUserLogged, orderController.controllerGetUserOrders);
 // routerAPI.post('/orders',checkUserLogged, orderController.controllerPostUserPurchaseCart);

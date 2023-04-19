@@ -8,6 +8,7 @@ import MongoDBContainer from "../containers/mongoDBContainer.js";
 import cartService from "./cartService.js";
 import orderService from "./orderService.js";
 //TODO CREATE REPOSITORY
+let instance = null;
 
 class UserService{
     constructor(){
@@ -99,14 +100,6 @@ class UserService{
         })
         return productsBougth;
     }
-    addItemToCart = async (email, productID) => {
-        if(!this.checkExistingUser(email)){
-            throw new Error(`No user was found with the email ${email}`, 'NOT_FOUND');
-        }
-        let user = await this.container.getItemByCriteria({email: email})
-        let productAdded = (await cartService.addProductToCart(user.cart, productID)).map((product)=>product.title);
-        return productAdded;
-    }
     getUserOrders = async (email) => {
         if(!this.checkExistingUser(email)){
             throw new Error(`No user was found with the email ${email}`, 'NOT_FOUND');
@@ -118,8 +111,11 @@ class UserService{
         })
         return userOrders;
     }
+    static getInstance(){
+        if(!instance){
+            instance = new UserService();
+        }
+        return instance;
+    }
 }
-//TODO SINGLETON
-const userService = new UserService();
-Object.freeze(userService);
-export default userService;
+export default UserService.getInstance();

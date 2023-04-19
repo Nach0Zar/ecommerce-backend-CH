@@ -1,6 +1,7 @@
 import { Error } from "../error/error.js";
 import MongoDBContainer from "../containers/mongoDBContainer.js";
 //TODO CREATE REPOSITORY
+let instance = null;
 
 class OrderService{
     constructor(){
@@ -13,8 +14,11 @@ class OrderService{
         }            
         return user;
     }
+    static getInstance(){
+        if(!instance){
+            instance = new OrderService();
+        }
+        return instance;
+    }
 }
-//TODO SINGLETON
-const orderService = new OrderService();
-Object.freeze(orderService);
-export default orderService;
+export default OrderService.getInstance();
