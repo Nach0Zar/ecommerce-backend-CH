@@ -4,7 +4,7 @@ import MongoDBContainer from "../containers/mongoDBContainer.js";
 import Cart from "../models/cart.js";
 import productService from "./productService.js";
 import productAndEmailsValidation from "../validations/productAndEmailsValidation.js";
-//TODO CREATE REPOSITORY + RETURN DTOs
+//TODO RETURN DTOs
 let instance = null;
 
 class CartService{
@@ -12,16 +12,17 @@ class CartService{
         this.container = new MongoDBContainer("carts")
     }
     getCartProducts = async (userEmail) => {
-        //TODO return product data and not product id only
         let user = await userService.getUserInformation(userEmail);
         let cart = await this.container.getItemByID(user.cart)
         if(!cart){   
             throw new Error(`No cart was found with the id ${user.cart}`, 'NOT_FOUND');
         }
-        return cart.products;
+        return cart.products.map(async (product)=>{
+            return {idProd: await productService.getItemByID(product.idProd), qty: product.qty}
+        });
     }
     createCart = async (products = []) => {
-        let newCart = new Cart(products);
+        let newCart = new Cart({products: products});
         let cartID = await this.container.save(newCart);
         if(!cartID){
             throw new Error('There was an error creating the cart', 'INTERNAL_ERROR');
@@ -31,12 +32,11 @@ class CartService{
     addProductToCart = async (userEmail, productID) => {
         await productAndEmailsValidation(userEmail, productID);
         let user = await userService.getUserInformation(userEmail);
-        let cart = await this.container.getItemByID(user.cart)
+        let cart = await this.container.getItemByID(user.cart);
         let productToAdd = await productService.getProduct(productID);
-        let cartItem = new Cart(cart.products, cart.id);
-        cartItem.addProduct(productToAdd);
-        if(await this.container.modifyByID(cartItem.getID(), cartItem.toDTO())) {
-            return cartItem.getProducts();
+        cart.addProduct(productToAdd);
+        if(await this.container.modifyByID(cart.getID(), cart.toDTO())) {
+            return cart.getProducts();
         }
         else{
             throw new Error(`There was an error modifing the cart`, 'INTERNAL_ERROR') 
@@ -50,9 +50,9 @@ class CartService{
         if(!this.checkExistingCart(cartID)){
             throw new Error(`No cart was found with the id ${cartID}`, 'NOT_FOUND');
         }
-        let cartFound = await this.container.getItemByID(cartID);
-        let cartItem = new Cart([], cartFound.id);
-        await this.container.modifyByID(cartItem.getID(), cartItem.toDTO())
+        let cartItem = await this.container.getItemByID(cartID);
+        await this.container.modifyByID(cartItem.getID(), {id: cartItem.getID(), products: []});
+        cartItem = await this.container.getItemByID(cartID);
         if(cartItem.getProducts().length > 0){            
             throw new Error(`There was an error modifing the cart`, 'INTERNAL_ERROR') 
         }
@@ -61,12 +61,11 @@ class CartService{
         await productAndEmailsValidation(email, productID);
         let user = await userService.getUserInformation(userEmail);
         let cart = await this.container.getItemByID(user.cart);
-        let cartItem = new Cart(cart.products, cart.id);
-        if(!cartItem.hasProduct(productID)){
+        if(!cart.hasProduct(productID)){
             throw new Error(`There was no product matching the ID ${productID} in the cart with ID ${cart.id}`, 'BAD_REQUEST')
         }
-        cartItem.deleteProduct(productID);
-        if(!(await this.container.modifyByID(cartItem.getID(), cartItem.toDTO()))) {
+        cart.deleteProduct(productID);
+        if(!(await this.container.modifyByID(cart.getID(), cart.toDTO()))) {
             throw new Error(`There was an error modifing the cart`, 'INTERNAL_ERROR') 
         }
     }
@@ -74,11 +73,10 @@ class CartService{
         if(!this.checkExistingCart(cartID)){
             throw new Error(`No cart was found with the id ${cartID}`, 'NOT_FOUND');
         }
-        let cartFound = await this.container.getItemByID(cartID);
-        let cartItem = new Cart(parsedProducts, cartFound.id);
-        let cartProducts = cartItem.getProducts();
+        let cart = await this.container.getItemByID(cartID);
+        let cartProducts = cart.getProducts();
         if(cartProducts.length > 0){
-            cartItem.cleanCart();
+            cart.cleanCart();
             await this.deleteAllProductsFromCart(cartID);
             return cartProducts;
         }
