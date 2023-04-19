@@ -4,7 +4,7 @@ import logger from '../utils/logger.js';
 let instance = null;
 
 class OrderController{
-    controllerGetUserOrders = async (req, res, next) => {
+    controllerGetOrders = async (req, res, next) => {
         try{
             let orders = await orderService.getUserOrders(req.cookies.email);
             logger.info(`GET REQUEST successful for getting all orders from user ${req.cookies.email}`);
