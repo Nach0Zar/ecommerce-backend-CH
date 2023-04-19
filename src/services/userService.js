@@ -6,7 +6,7 @@ import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import userRepository from "../repositories/userRepository.js";
 import cartService from "./cartService.js";
-//TODO CREATE REPOSITORY + RETURN DTOs
+//TODO RETURN DTOs
 let instance = null;
 
 class UserService{
