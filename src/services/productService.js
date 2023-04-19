@@ -1,9 +1,8 @@
 import { Error } from "../error/error.js";
 import Product from "../models/product.js";
 import MongoDBContainer from "../containers/mongoDBContainer.js";
-import productValidation from "../validations/productValidation.js";
 import productDataValidation from "../validations/productDataValidation.js";
-//TODO CREATE REPOSITORY
+//TODO CREATE REPOSITORY + RETURN DTOs
 let instance = null;
 
 class ProductService{
@@ -20,15 +19,6 @@ class ProductService{
     checkExistingProduct = async (productID) => {
         let productFound = await this.container.getItemByID(productID);
         return (productFound !== null);
-    }
-    parseProducts = async (productList = []) => {
-        let parsedProducts = [];
-        for(const listedProduct in productList){
-            let product = await productService.getProduct(productList[listedProduct].id);
-            productValidation(productList[listedProduct], product);
-            parsedProducts.push(product);
-        }
-        return parsedProducts;
     }
     getAllItems = async () => {
         let items = await this.container.getAllItems();

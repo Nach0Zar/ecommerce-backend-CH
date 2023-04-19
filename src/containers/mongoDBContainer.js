@@ -1,5 +1,5 @@
 import { mongoDatabase } from '../db/mongoClient.js';
-class MongoDBContainer {
+export default class MongoDBContainer {
     constructor(dataType) {
         this.items = mongoDatabase.collection(dataType);
     }
@@ -51,4 +51,3 @@ class MongoDBContainer {
         return data
     }
 }
-export default MongoDBContainer;

@@ -18,7 +18,7 @@ class OrderController{
         try{
             let order = await orderService.purchaseCart(req.cookies.email);
             logger.info(`POST REQUEST successful for product ${req.body.productId} in cart from user${req.cookies.email}`);
-            res.status(200).json();
+            res.status(200).json(order);
         }
         catch(error){
             next(error);
