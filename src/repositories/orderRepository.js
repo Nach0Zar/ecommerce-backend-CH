@@ -43,10 +43,10 @@ class OrderRepository {
             idClient: newOrder.getIdClient(),    
             timestamp: newOrder.getTimestamp()
         }
-        await this.#dao.modifyByID(id, updateInfo);
+        return await this.#dao.modifyByID(id, updateInfo);
     }
     async deleteById(id){
-        this.#dao.deleteById(id)
+        return this.#dao.deleteById(id)
     }
     static getInstance(){
         if(!instance){

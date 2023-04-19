@@ -46,10 +46,10 @@ class UserRepository {
             image: newUser.getImage(),
             cart: newUser.getCart()
         }
-        await this.#dao.modifyByID(id, updateInfo);
+        return await this.#dao.modifyByID(id, updateInfo);
     }
     async deleteById(id){
-        this.#dao.deleteById(id)
+        return this.#dao.deleteById(id)
     }
     static getInstance(){
         if(!instance){

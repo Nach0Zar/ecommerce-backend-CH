@@ -41,10 +41,10 @@ class CartRepository {
         let updateInfo = {
             products: newCart.getProducts()
         }
-        await this.#dao.modifyByID(id, updateInfo);
+        return await this.#dao.modifyByID(id, updateInfo);
     }
     async deleteById(id){
-        this.#dao.deleteById(id)
+        return this.#dao.deleteById(id)
     }
     static getInstance(){
         if(!instance){
