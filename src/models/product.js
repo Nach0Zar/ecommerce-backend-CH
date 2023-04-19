@@ -2,14 +2,13 @@ import { randomUUID } from 'crypto';
 class Product{
     title
     price
-    thumbnail
+    image
     id
-    //TODO thumbnail cambiar por image
-    //TODO description
-    constructor(title, price, thumbnail, id = randomUUID()){
-        this.title = title
-        this.price = +price
-        this.thumbnail = thumbnail
+    constructor(title, price, image, description, id = randomUUID()){
+        this.title = title;
+        this.price = +price;
+        this.image = image;
+        this.description = description;
         this.id = id;
     }
     getTitle(){
@@ -24,29 +23,29 @@ class Product{
     setPrice(price){
         this.price = price;   
     }
-    setThumbnail(){
-        return this.thumbnail;
+    setImage(){
+        return this.image;
     }
-    getThumbnail(thumbnail){
-        this.thumbnail = thumbnail;  
+    getImage(image){
+        this.image = image;  
+    }
+    getDescription(){
+        return this.description;
+    }
+    setDescription(description){
+        this.description = description;
     }
     getID(){
         return this.id;
-        
     }
     setID(id){
         this.id = id;
-    }
-    modify(item){
-        this.setTitle(item.title);
-        this.setPrice(item.price);
-        this.setThumbnail(item.thumbnail);
     }
     toDTO(){
         const dto = {
             title: this.title,
             price: this.price,
-            thumbnail: this.thumbnail
+            image: this.image
         }
         return dto
     }
