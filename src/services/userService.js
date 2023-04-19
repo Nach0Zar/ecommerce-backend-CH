@@ -6,7 +6,7 @@ import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import userRepository from "../repositories/userRepository.js";
 import cartService from "./cartService.js";
-//TODO RETURN DTOs
+
 let instance = null;
 
 class UserService{
@@ -70,12 +70,12 @@ class UserService{
         if(!user){
             throw new Error(`No user was found with the email ${email}`, 'NOT_FOUND');
         }            
-        return user;
+        return user.toDTO();
     }
     getUserCartInformation = async (email) => {
         let user = await this.getUserInformation(email)
-        let cartInformation = await cartService.getCartProducts(user.cart);
-        return cartInformation;
+        let cartInformation = await cartService.getCartProducts(user.getCart());
+        return cartInformation.toDTO();
     }
     checkExistingUser = async (email) => {
         let userFound = await this.container.getItemByCriteria({email: email});
