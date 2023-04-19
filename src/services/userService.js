@@ -6,8 +6,7 @@ import jwt from 'jsonwebtoken';
 import mailer from '../utils/mailer.js';
 import MongoDBContainer from "../containers/mongoDBContainer.js";
 import cartService from "./cartService.js";
-import orderService from "./orderService.js";
-//TODO CREATE REPOSITORY
+//TODO CREATE REPOSITORY + RETURN DTOs
 let instance = null;
 
 class UserService{
@@ -27,8 +26,8 @@ class UserService{
                     else{
                         return done(null, false)
                     }
-                    })
                 })
+            })
         )
     }
     serializeUserMongo = (user, done) => {
@@ -81,35 +80,6 @@ class UserService{
     checkExistingUser = async (email) => {
         let userFound = await this.container.getItemByCriteria({email: email});
         return (userFound !== null)
-    }
-    purchaseCart = async (email) => {
-        if(!this.checkExistingUser(email)){
-            throw new Error(`No user was found with the email ${email}`, 'NOT_FOUND');
-        }
-        let user = await this.container.getItemByCriteria({email: email})
-        let productsBougth = (await cartService.purchaseCart(user.cart)).map((product)=>product.title);
-        mailer.send({
-            to: config.MAIL_ADMIN,
-            subject: `New purchase order: ${user.firstname} ${user.lastname} - ${email}`,
-            text: `Products purchased: ${productsBougth.join(", ")}`
-        })
-        mailer.send({
-            to: email,
-            subject: `Purchase order processed!`,
-            text: `Products purchased: ${productsBougth.join(", ")}`
-        })
-        return productsBougth;
-    }
-    getUserOrders = async (email) => {
-        if(!this.checkExistingUser(email)){
-            throw new Error(`No user was found with the email ${email}`, 'NOT_FOUND');
-        }
-        let user = await this.container.getItemByCriteria({email: email})
-        let userOrders = [];
-        user.orders.foreach(async (orderID) => {
-            userOrders += await orderService.getOrder(orderID)
-        })
-        return userOrders;
     }
     static getInstance(){
         if(!instance){

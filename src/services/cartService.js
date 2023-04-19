@@ -4,7 +4,7 @@ import MongoDBContainer from "../containers/mongoDBContainer.js";
 import Cart from "../models/cart.js";
 import productService from "./productService.js";
 import productAndEmailsValidation from "../validations/productAndEmailsValidation.js";
-//TODO CREATE REPOSITORY
+//TODO CREATE REPOSITORY + RETURN DTOs
 let instance = null;
 
 class CartService{
@@ -21,9 +21,7 @@ class CartService{
         return cart.products;
     }
     createCart = async (products = []) => {
-        //TODO add quantities
-        let productListParsed = await productService.parseProducts(products)
-        let newCart = new Cart(productListParsed);
+        let newCart = new Cart(products);
         let cartID = await this.container.save(newCart);
         if(!cartID){
             throw new Error('There was an error creating the cart', 'INTERNAL_ERROR');
@@ -35,8 +33,7 @@ class CartService{
         let user = await userService.getUserInformation(userEmail);
         let cart = await this.container.getItemByID(user.cart)
         let productToAdd = await productService.getProduct(productID);
-        let parsedProducts = await productService.parseProducts(cart.products);
-        let cartItem = new Cart(parsedProducts, cart.id);
+        let cartItem = new Cart(cart.products, cart.id);
         cartItem.addProduct(productToAdd);
         if(await this.container.modifyByID(cartItem.getID(), cartItem.toDTO())) {
             return cartItem.getProducts();
@@ -54,9 +51,7 @@ class CartService{
             throw new Error(`No cart was found with the id ${cartID}`, 'NOT_FOUND');
         }
         let cartFound = await this.container.getItemByID(cartID);
-        let parsedProducts = await productService.parseProducts(cartFound.products)
-        let cartItem = new Cart(parsedProducts, cartFound.id)
-        cartItem.cleanCart();
+        let cartItem = new Cart([], cartFound.id);
         await this.container.modifyByID(cartItem.getID(), cartItem.toDTO())
         if(cartItem.getProducts().length > 0){            
             throw new Error(`There was an error modifing the cart`, 'INTERNAL_ERROR') 
@@ -65,9 +60,8 @@ class CartService{
     deleteProductFromCart = async (email, productID) => {
         await productAndEmailsValidation(email, productID);
         let user = await userService.getUserInformation(userEmail);
-        let cart = await this.container.getItemByID(user.cart)
-        let parsedProducts = await productService.parseProducts(cart.products);
-        let cartItem = new Cart(parsedProducts, cart.id);
+        let cart = await this.container.getItemByID(user.cart);
+        let cartItem = new Cart(cart.products, cart.id);
         if(!cartItem.hasProduct(productID)){
             throw new Error(`There was no product matching the ID ${productID} in the cart with ID ${cart.id}`, 'BAD_REQUEST')
         }
@@ -81,7 +75,6 @@ class CartService{
             throw new Error(`No cart was found with the id ${cartID}`, 'NOT_FOUND');
         }
         let cartFound = await this.container.getItemByID(cartID);
-        let parsedProducts = await productService.parseProducts(cartFound.products)
         let cartItem = new Cart(parsedProducts, cartFound.id);
         let cartProducts = cartItem.getProducts();
         if(cartProducts.length > 0){

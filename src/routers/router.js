@@ -3,9 +3,12 @@ import productController from '../controllers/productController.js';
 import userController from '../controllers/userController.js'
 import cartController from '../controllers/cartController.js';
 import orderController from '../controllers/orderController.js';
+import imageController from '../controllers/imageController.js';
+import { Error } from '../error/error.js';
 import passport from 'passport';
 import checkUserLogged from '../middlewares/checkUserLogged.js';
 import userIsAdmin from '../middlewares/userIsAdmin.js'
+import { postImage } from '../middlewares/imageHandler.js';
 
 const routerAPI = express.Router();
 //users
@@ -27,4 +30,6 @@ routerAPI.delete('/shoppingcartproducts/:id_prod',checkUserLogged, cartControlle
 //orders
 routerAPI.get('/orders',checkUserLogged, orderController.controllerGetOrders);
 routerAPI.post('/orders',checkUserLogged, orderController.controllerPostPurchaseCart);
+//images
+routerAPI.post('/images'/*,checkUserLogged*/, postImage('file'), imageController.controllerPostImage);
 export default routerAPI;
