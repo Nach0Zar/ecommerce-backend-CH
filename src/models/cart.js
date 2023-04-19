@@ -18,41 +18,46 @@ class Cart{
     setID(id){
         this.id = id;
     }
-    addProduct(product){
-        //TODO products + cantidad prods: [ { idProd: 1, cant: 2 }, { idProd: 2, cant: 5} ]
-        this.products.push(product);
+    addProduct(productID){
+        //prods: [ { idProd: 1, cant: 2 }, { idProd: 2, cant: 5} ]
+        if (this.hasProduct(productID)){
+            this.products.map((product)=>{
+                if(product.idProd === productID){
+                    product.qty++;
+                }
+            });
+        }
+        else{
+            this.products.push({idProd: productID, qty: 1});
+        }
     }
     deleteProduct(productID){
         let index = -1;
         let i = 0;
         while(i < this.products.length && index === -1){
-            if(this.products[i].id === productID){
+            if(this.products[i].idProd === productID){
                 index = i;
             }
             i++;
         };
-        (index !== -1) && this.products.splice(index,1);
-    }
+        if(index !== -1) {
+            if(this.products[index].qty === 1){
+                this.products.splice(index,1);
+            }
+            else{
+                this.products[index].qty = this.products[index].qty - 1;
+            }
+        }
+    };
     hasProduct(idItem){
         for(let product of this.products){
-            if(product.id === idItem){
+            if(product.idProd === idItem){
                 return true;
             }
         };
         return false;
     }
-    async modify(cart){
-        await this.setProducts(cart.products);
-    }
     toDTO(){
-        let productsDTO = []
-        this.products.forEach(product => {
-            const data = {
-                id: product.getID(),
-                ...product.toDTO()
-            }
-            productsDTO.push(data);
-        });
         const dto = {
             products: productsDTO
         }
