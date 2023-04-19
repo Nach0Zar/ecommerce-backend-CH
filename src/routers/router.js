@@ -31,5 +31,5 @@ routerAPI.delete('/shoppingcartproducts/:id_prod',checkUserLogged, cartControlle
 routerAPI.get('/orders',checkUserLogged, orderController.controllerGetOrders);
 routerAPI.post('/orders',checkUserLogged, orderController.controllerPostPurchaseCart);
 //images
-routerAPI.post('/images'/*,checkUserLogged*/, postImage('file'), imageController.controllerPostImage);
+routerAPI.post('/images', postImage('file'), imageController.controllerPostImage);
 export default routerAPI;
