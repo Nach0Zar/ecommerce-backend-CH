@@ -1,6 +1,7 @@
 import express from 'express';
 import productController from '../controllers/productController.js';
 import userController from '../controllers/userController.js'
+import cartController from '../controllers/cartController.js';
 import passport from 'passport';
 import checkUserLogged from '../middlewares/checkUserLogged.js';
 import userIsAdmin from '../middlewares/userIsAdmin.js'
@@ -24,10 +25,10 @@ routerAPI.delete('/products/:id', checkUserLogged, userIsAdmin, productControlle
 // routerAPI.post('/shoppingcart/:id_cart/products', checkUserLogged, cartController.controllerPostProductToCart);
 // routerAPI.delete('/shoppingcart/:id_cart', checkUserLogged, cartController.controllerDeleteAllProductsFromCart);
 // routerAPI.delete('/shoppingcart/:id_cart/products/:id_prod', checkUserLogged, cartController.controllerDeleteProductFromCartByID);
-routerAPI.get('/shoppingcartproducts',checkUserLogged, userController.controllerGetUserCartInformation);
-routerAPI.post('/shoppingcartproducts',checkUserLogged, userController.controllerPostProductToCart);
-routerAPI.delete('/shoppingcartproducts/:id',checkUserLogged, userController.controllerDeleteProductFromCartByID);
+routerAPI.get('/shoppingcartproducts',checkUserLogged, cartController.controllerGetUserCartInformation);
+routerAPI.post('/shoppingcartproducts',checkUserLogged, cartController.controllerPostProductToCart);
+routerAPI.delete('/shoppingcartproducts/:id',checkUserLogged, cartController.controllerDeleteProductFromCartByID);
 //orders
-routerAPI.get('/orders',checkUserLogged, userController.controllerGetUserOrders);
-routerAPI.post('/orders',checkUserLogged, userController.controllerPostUserPurchaseCart);
+// routerAPI.get('/orders',checkUserLogged, orderController.controllerGetUserOrders);
+// routerAPI.post('/orders',checkUserLogged, orderController.controllerPostUserPurchaseCart);
 export default routerAPI;
