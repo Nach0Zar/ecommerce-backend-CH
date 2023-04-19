@@ -4,6 +4,7 @@ import MongoDBContainer from "../containers/mongoDBContainer.js";
 import productValidation from "../validations/productValidation.js";
 import productDataValidation from "../validations/productDataValidation.js";
 //TODO CREATE REPOSITORY
+let instance = null;
 
 class ProductService{
     constructor(){
@@ -69,8 +70,11 @@ class ProductService{
             throw new Error(`There was an error deleting the product`, 'INTERNAL_ERROR') 
         }
     }
+    static getInstance(){
+        if(!instance){
+            instance = new ProductService();
+        }
+        return instance;
+    }
 }
-//TODO SINGLETON
-const productService = new ProductService();
-Object.freeze(productService);
-export default productService;
+export default ProductService.getInstance();

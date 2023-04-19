@@ -3,6 +3,8 @@ import userService from '../services/userService.js';
 import registerUserValidation from '../validations/registerUserValidation.js';
 import logger from '../utils/logger.js';
 
+let instance = null;
+
 class UserControllerClass{
     controllerPostRegisterUser = async (req, res, next) => {
         try{
@@ -41,31 +43,11 @@ class UserControllerClass{
             next(error);
         }
     }
-    controllerGetUserCartInformation = async (req, res, next) => {
-        try{
-            let cartProducts = await cartService.addProductToCart(req.params.id_cart, req.body.id_prod);
-            logger.info(`POST REQUEST successful for product ${req.body.id_prod} in cart ${req.params.id_cart}`);
-            res.status(200).json(cartProducts);
-        }
-        catch(error){
-            next(error);
-        }
-    }
     controllerPostUserPurchaseCart = async (req, res, next) => {
         try{
             let itemsBought = await userService.purchaseCart(req.cookies.email);
             logger.info(`POST REQUEST successful for purchasing cart items from user ${req.cookies.email}`);
             res.status(200).json({message: `Cart was successfully purchased! The following products were purchased: ${itemsBought.join(", ")}`});
-        }
-        catch(error){
-            next(error);
-        }
-    }
-    controllerPostProductToCart = async (req, res, next) => {
-        try{
-            await userService.addItemToCart(req.cookies.email, req.body.productId);
-            logger.info(`POST REQUEST successful for adding item ${req.body.productId} cart items from user ${req.cookies.email}`);
-            res.status(200).json({message: `Cart was successfully modified! The following product was added: ID ${req.body.productId}`});
         }
         catch(error){
             next(error);
@@ -81,8 +63,11 @@ class UserControllerClass{
             next(error);
         }
     }
+    static getInstance(){
+        if(!instance){
+            instance = new UserControllerClass();
+        }
+        return instance;
+    }
 }
-//TODO SINGLETON
-const userController = new UserControllerClass()
-Object.freeze(userController);
-export default userController;
+export default UserControllerClass.getInstance();

@@ -1,13 +1,13 @@
 import { Error } from "../error/error.js";
-import cartService from "../services/cartService.js";
+import userService from "../services/userService.js";
 import productService from "../services/productService.js";
 
-export default async function productAndCartIDsValidation(cartID, productID) {
-    if(!cartID){
-        throw new Error(`Cart ID ${cartID} is invalid`, 'BAD_REQUEST');
+export default async function productAndEmailsValidation(email, productID) {
+    if(!email){
+        throw new Error(`Email ${email} is invalid`, 'BAD_REQUEST');
     }
-    if(!(await cartService.checkExistingCart(cartID))){
-        throw new Error(`No cart was found with the ID ${cartID}`, 'NOT_FOUND');
+    if(!(await userService.checkExistingUser(email))){
+        throw new Error(`No user was found with the email ${email}`, 'NOT_FOUND');
     }
     if(!productID){
         throw new Error(`Product ID ${productID} is invalid`, 'BAD_REQUEST');
