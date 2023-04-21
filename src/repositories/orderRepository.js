@@ -40,9 +40,9 @@ class OrderRepository {
     }
     async modifyByID(id, newOrder){
         let updateInfo = {
-            products: newOrder.getProducts(),
-            idClient: newOrder.getIdClient(),    
-            timestamp: newOrder.getTimestamp()
+            products: newOrder.products,
+            idClient: newOrder.ddClient,    
+            timestamp: newOrder.timestamp
         }
         return await this.#dao.modifyByID(id, updateInfo);
     }
