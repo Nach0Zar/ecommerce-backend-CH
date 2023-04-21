@@ -40,7 +40,7 @@ class CartRepository {
     }
     async modifyByID(id, newCart){
         let updateInfo = {
-            products: newCart.getProducts()
+            products: newCart.products
         }
         return await this.#dao.modifyByID(id, updateInfo);
     }

@@ -17,9 +17,12 @@ class CartService{
         if(!cart){   
             throw new Error(`No cart was found with the id ${user.cart}`, 'NOT_FOUND');
         }
-        return cart.products.map(async (product)=>{
-            return {idProd: await productService.getItemByID(product.idProd).toDTO(), qty: product.qty}
-        });
+        let cartProductsDTO = [];
+        let cartProducts = cart.getProducts();
+        for(let product in cartProducts){
+            cartProductsDTO.push({idProd: await productService.getProduct(cartProducts[product].idProd), qty: cartProducts[product].qty})
+        }
+        return cartProductsDTO;
     }
     createCart = async (products = []) => {
         let newCart = new Cart({products: products});
@@ -33,8 +36,7 @@ class CartService{
         await productAndEmailsValidation(userEmail, productID);
         let user = await userService.getUserInformation(userEmail);
         let cart = await this.container.getItemByID(user.cart);
-        let productToAdd = await productService.getProduct(productID);
-        cart.addProduct(productToAdd);
+        cart.addProduct(productID);
         if(await this.container.modifyByID(cart.getID(), cart.toDTO())) {
             return cart.getProducts();
         }
@@ -59,7 +61,7 @@ class CartService{
     }
     deleteProductFromCart = async (email, productID) => {
         await productAndEmailsValidation(email, productID);
-        let user = await userService.getUserInformation(userEmail);
+        let user = await userService.getUserInformation(email);
         let cart = await this.container.getItemByID(user.cart);
         if(!cart.hasProduct(productID)){
             throw new Error(`There was no product matching the ID ${productID} in the cart with ID ${cart.id}`, 'BAD_REQUEST')
