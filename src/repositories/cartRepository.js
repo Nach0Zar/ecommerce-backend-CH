@@ -24,14 +24,15 @@ class CartRepository {
         return new Cart(dto)
     }
     async getAllItems(){
-        let cartsDTOs = this.#dao.getAllItems();
+        let cartsDTOs = await this.#dao.getAllItems();
         return this.parseItems(cartsDTOs);
     }
     async getItemByCriteria(criteria) {
         const dtos = await this.#dao.getItemByCriteria(criteria)
         if (!dtos) return null
+        if (dtos.length === undefined) return new Cart(dtos)
         if (dtos.length === 1) {
-            return new Cart(dtos)
+            return new Cart(dtos[0])
         }
         else{
             return this.parseItems(dtos);
@@ -43,8 +44,8 @@ class CartRepository {
         }
         return await this.#dao.modifyByID(id, updateInfo);
     }
-    async deleteById(id){
-        return this.#dao.deleteById(id)
+    async deleteByID(id){
+        return this.#dao.deleteByID(id)
     }
     static getInstance(){
         if(!instance){

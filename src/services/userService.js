@@ -3,6 +3,7 @@ import config from "../config/config.js";
 import jwt from 'jsonwebtoken';
 import mailer from '../utils/mailer.js';
 import passport from 'passport';
+import User from "../models/user.js";
 import { Strategy as LocalStrategy } from 'passport-local';
 import userRepository from "../repositories/userRepository.js";
 import cartService from "./cartService.js";
@@ -11,13 +12,15 @@ let instance = null;
 
 class UserService{
     constructor(){
-        this.container = userRepository
+        this.container = userRepository;
         passport.use('local-login', new LocalStrategy(
-            {},
+            {
+                usernameField: 'email'
+            },
             (username, password, done) => {
                 this.container.getItemByCriteria({email: username}).then((user)=>{
                     if(user){
-                        const originalPassword = jwt.verify(user.password, config.SESSION.secret)
+                        const originalPassword = jwt.verify(user.getPassword(), config.SESSION.secret)
                         if (password !== originalPassword) {
                             return done(null, false)
                         }
@@ -31,20 +34,20 @@ class UserService{
         )
     }
     serializeUserMongo = (user, done) => {
-        done(null, user.id);
+        done(null, user.getID());
     }
-    deserializeUserMongo = (id, done) => {
-        const user = this.container.getItemByID(id)
-        done(null, user)
+    deserializeUserMongo = async (id, done) => {
+        const user = await this.container.getItemByID(id)
+        done(null, user.toDTO())
     }
     registerUser = async (information) => {
         let cartID = await cartService.createCart();
         let user = new User({
             name: information.name,
             lastname: information.lastname,
-            email: information.username,
+            email: information.email,
             image: information.image,
-            password: jwt.sign(information.password1, config.SESSION.secret),
+            password: jwt.sign(information.password, config.SESSION.secret),
             cart: cartID
         })
         return this.container.save(user).then((userID)=>{

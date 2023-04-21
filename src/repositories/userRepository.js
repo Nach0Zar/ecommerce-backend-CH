@@ -24,14 +24,15 @@ class UserRepository {
         return new User(dto)
     }
     async getAllItems(){
-        let usersDTOs = this.#dao.getAllItems();
+        let usersDTOs = await this.#dao.getAllItems();
         return this.parseItems(usersDTOs);
     }
     async getItemByCriteria(criteria) {
         const dtos = await this.#dao.getItemByCriteria(criteria)
         if (!dtos) return null
-        if (dtos.length === 1) {
-            return new User(dtos);
+        if (dtos.length === undefined) return new User(dtos);
+        if (dtos.length === 1){ 
+            return new User(dtos[0]);
         }
         else{
             return this.parseItems(dtos);
@@ -48,8 +49,8 @@ class UserRepository {
         }
         return await this.#dao.modifyByID(id, updateInfo);
     }
-    async deleteById(id){
-        return this.#dao.deleteById(id)
+    async deleteByID(id){
+        return this.#dao.deleteByID(id)
     }
     static getInstance(){
         if(!instance){

@@ -13,7 +13,7 @@ class ProductService{
         if(!(await this.checkExistingProduct(productID))){
             throw new Error(`No product was found matching ID ${productID}`, 'BAD_REQUEST');
         }
-        return await this.container.getItemByID(productID).toDTO();
+        return (await this.container.getItemByID(productID)).toDTO();
     }
     checkExistingProduct = async (productID) => {
         let productFound = await this.container.getItemByID(productID);
@@ -23,6 +23,9 @@ class ProductService{
         let items = await this.container.getAllItems();
         if(items < 1){
             throw new Error(`No product was found`, 'BAD_REQUEST');
+        }
+        if(items.length === undefined){
+            return items.toDTO();
         }
         let itemsDTO = [];
         items.forEach(product => {
@@ -43,10 +46,10 @@ class ProductService{
             throw new Error(`There was an error modifing the product`, 'INTERNAL_ERROR') 
         } 
     }
-    createProduct = async (title, price, image, description) => {
-        productDataValidation(title, price, image, description);
+    createProduct = async (name, price, image, description) => {
+        productDataValidation(name, price, image, description);
         let newProduct = new Product({
-            title: title, 
+            name: name, 
             price: +price, 
             image: image,
             description: description}

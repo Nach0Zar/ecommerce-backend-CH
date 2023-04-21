@@ -24,14 +24,22 @@ class ProductsRepository {
         return new Product(dto)
     }
     async getAllItems(){
-        let productsDTOs = this.#dao.getAllItems();
-        return this.parseItems(productsDTOs);
+        let productsDTOs = await this.#dao.getAllItems();
+        console.log(productsDTOs)
+        if (!productsDTOs) return null
+        if (productsDTOs.length === 1 || productsDTOs.length === undefined) {
+            return new Product(productsDTOs[0])
+        }
+        else{
+            return this.parseItems(productsDTOs);
+        }
     }
     async getItemByCriteria(criteria) {
         const dtos = await this.#dao.getItemByCriteria(criteria)
         if (!dtos) return null
+        if (dtos.length === undefined) return new Product(dtos);
         if (dtos.length === 1) {
-            return new Product(dtos)
+            return new Product(dtos[0]);
         }
         else{
             return this.parseItems(dtos);
@@ -39,15 +47,15 @@ class ProductsRepository {
     }
     async modifyByID(id, newProduct){
         let updateInfo = {
-            title: newProduct.getTitle(),
-            price: newProduct.getPrice(),
-            image: newProduct.getImage(),
-            description: newProduct.getDescription()
+            name: newProduct.name,
+            price: newProduct.price,
+            image: newProduct.image,
+            description: newProduct.description
         }
         return await this.#dao.modifyByID(id, updateInfo);
     }
-    async deleteById(id){
-        return this.#dao.deleteById(id)
+    async deleteByID(id){
+        return this.#dao.deleteByID(id)
     }
     static getInstance(){
         if(!instance){

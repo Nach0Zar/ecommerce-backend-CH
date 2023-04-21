@@ -1,8 +1,8 @@
 import { Error } from "../error/error.js";
 
-export default function productDataValidation(title, price, image, description) {
-    if(title === ""){
-        throw new Error(`The product title can not be empty.`, 'BAD_REQUEST')
+export default function productDataValidation(name, price, image, description) {
+    if(name === ""){
+        throw new Error(`The product name can not be empty.`, 'BAD_REQUEST')
     }
     if(price === ""){
         throw new Error(`The product price can not be empty.`, 'BAD_REQUEST')

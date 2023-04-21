@@ -15,7 +15,7 @@ routerAPI.get('/users',checkUserLogged,userController.controllerGetUserInformati
 routerAPI.post('/users', userController.controllerPostRegisterUser);
 routerAPI.post('/logout',checkUserLogged,userController.controllerPostLogOutUser);
 //sessions
-routerAPI.post('/sessions',passport.authenticate('local-login', { failWithError: false }),userController.controllerPostLogInUser);
+routerAPI.post('/sessions', passport.authenticate('local-login', { failWithError: false }), userController.controllerPostLogInUser);
 //products
 routerAPI.get('/products',productController.controllerGetAllProducts);
 routerAPI.get('/products/:id',productController.controllerGetProductByID);

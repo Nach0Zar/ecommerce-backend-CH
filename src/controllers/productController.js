@@ -36,7 +36,7 @@ class ProductController{
     }
     controllerPostProduct = async (req, res, next) => {
         try{
-            let productID = await productService.createProduct(req.body.title, req.body.price, req.body.thumbnail);
+            let productID = await productService.createProduct(req.body.name, req.body.price, req.body.image, req.body.description);
             logger.info(`POST REQUEST successful for product ${productID}`);
             res.status(200).json({message: `The item with ID ${productID} was added to the catalog.`})
         }
