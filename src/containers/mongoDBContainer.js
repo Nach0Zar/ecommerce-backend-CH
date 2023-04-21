@@ -1,4 +1,5 @@
 import { mongoDatabase } from '../db/mongoClient.js';
+import { ObjectId } from 'mongodb'
 export default class MongoDBContainer {
     constructor(dataType) {
         this.items = mongoDatabase.collection(dataType);
@@ -8,7 +9,7 @@ export default class MongoDBContainer {
         return (await this.items.insertOne(object)).insertedId.toString()
     }
     async getItemByID(idItem) {
-        let criterio = { _id: ObjectID(idItem) };
+        let criterio = { _id: ObjectId(idItem) };
         let item = await this.items.find(criterio).toArray();
         if(!item.toString()){//to check if no doc was found
             return null;
@@ -31,15 +32,15 @@ export default class MongoDBContainer {
         if(!item.toString()){//to check if no doc was found
             return null;
         }
-        return (this.parseData(item[0]))
+        return (this.parseData(item[0]))//TODO CHECK WITH OTHERS SINCE IT RETURNS ONLY 1
     }
     async modifyByID(idItem, newItemParam){
         delete newItemParam.id;
-        let query = await this.items.updateOne({ _id: ObjectID(idItem) }, { $set: newItemParam });
+        let query = await this.items.updateOne({ _id: ObjectId(idItem) }, { $set: newItemParam });
         return (query.modifiedCount > 0);
     }
     async deleteByID(idItem){
-        let criterio = { _id: ObjectID(idItem) };
+        let criterio = { _id: ObjectId(idItem) };
         let query = await this.items.deleteOne(criterio);
         return (query.deletedCount > 0);
     }
