@@ -1,50 +1,60 @@
 import { randomUUID } from 'crypto';
 class Product{
-    title
-    price
-    thumbnail
-    id
-    constructor(title, price, thumbnail, id = randomUUID()){
-        this.title = title
-        this.price = +price
-        this.thumbnail = thumbnail
-        this.id = id;
+    #name
+    #price
+    #image
+    #description
+    #id
+    constructor({name, price, image, description, id = randomUUID()}){
+        this.#name = name;
+        this.#price = +price;
+        this.#image = image;
+        this.#description = description;
+        this.#id = id;
     }
-    getTitle(){
-        return this.title;
+    getName(){
+        return this.#name;
     }
-    setTitle(title){
-        this.title = title;
+    setName(name){
+        this.#name = name;
     }
     getPrice(){
-        return this.price;
+        return this.#price;
     }
     setPrice(price){
-        this.price = price;   
+        this.#price = price;   
     }
-    setThumbnail(){
-        return this.thumbnail;
+    setImage(){
+        return this.#image;
     }
-    getThumbnail(thumbnail){
-        this.thumbnail = thumbnail;  
+    getImage(image){
+        this.#image = image;  
+    }
+    getDescription(){
+        return this.#description;
+    }
+    setDescription(description){
+        this.#description = description;
     }
     getID(){
-        return this.id;
-        
+        return this.#id;
     }
     setID(id){
-        this.id = id;
+        this.#id = id;
     }
-    modify(item){
-        this.setTitle(item.title);
-        this.setPrice(item.price);
-        this.setThumbnail(item.thumbnail);
+    modify({name, price, image, description}){
+        this.setName(name);
+        this.setPrice(price);
+        this.setImage(image);
+        this.setDescription(description);
     }
     toDTO(){
         const dto = {
-            title: this.title,
-            price: this.price,
-            thumbnail: this.thumbnail
+            name: this.#name,
+            price: this.#price,
+            image: this.#image,
+            description: this.#description,
+            id: this.#id
         }
         return dto
     }

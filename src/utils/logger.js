@@ -1,5 +1,7 @@
 import pino from 'pino';
 
+let instance = null;
+
 const streams = [
     {level: 'info', stream: process.stdout},
     {level: 'warn', stream: pino.destination(`warn.log`) },
@@ -19,9 +21,12 @@ class Logger {
     error = (message) => {
         this.logger.error(message)
     }
+    static getInstance(){
+        if(!instance){
+            instance = new Logger();
+        }
+        return instance;
+    }
 }
-
-const logger = new Logger();
-Object.freeze(logger);
-export default logger;
+export default Logger.getInstance();
   
