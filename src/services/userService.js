@@ -7,6 +7,7 @@ import User from "../models/user.js";
 import { Strategy as LocalStrategy } from 'passport-local';
 import userRepository from "../repositories/userRepository.js";
 import cartService from "./cartService.js";
+import userDataValidation from "../validations/userDataValidation.js";
 
 let instance = null;
 
@@ -41,6 +42,7 @@ class UserService{
         done(null, user.toDTO())
     }
     registerUser = async (information) => {
+        userDataValidation(information);
         let cartID = await cartService.createCart();
         let user = new User({
             name: information.name,
