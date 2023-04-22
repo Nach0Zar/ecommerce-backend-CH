@@ -9,11 +9,6 @@ dotenv.config({path:path.join(__dirname+'/../.env')});
 const argv = parseArgs(process.argv.slice(2), { alias: { p: 'port', m: 'mode', e: 'env' }, default: { port: 8080, mode: 'fork', env: 'development'} });
 const EXPIRY_TIME = 60 * 10 * 1000;
 const sessionConfig = {
-    //mongo sessions
-    // store: MongoStore.create({
-    //     mongoUrl: `process.env.MONGODB_CNXSTRING`,
-    //     ttl: 60 * 10
-    // }),
     cookie: {
         httpOnly: false,
         secure: false,
@@ -32,6 +27,23 @@ const NODEMAILER_CONFIG = {
         pass: process.env.NODEMAILER_PASS
     }
 };
+let mongoConfig;
+if(argv.env == 'development'){
+    mongoConfig = {
+        client: 'mongodb',
+        dbName: process.env.MONGODB_DBNAME,
+        cnxStr: process.env.LOCALMONGODB_CNXSTRING,
+        SECRETSTR: process.env.MONGODB_SECRETSTR
+    }
+}
+else{
+    mongoConfig = {
+        client: 'mongodb',
+        dbName: process.env.MONGODB_DBNAME,
+        cnxStr: process.env.REMOTEMONGODB_CNXSTRING,
+        SECRETSTR: process.env.MONGODB_SECRETSTR
+    }
+}
 const config = {
     PORT: argv.port,
     MODE: argv.mode,
@@ -44,17 +56,9 @@ const config = {
     SESSION: sessionConfig,
     PROCESS_ID: process.pid,
     PROJECT_FOLDER: process.INIT_CWD,
-    mongoRemote: {
-        client: 'mongodb',
-        dbName: process.env.MONGODB_DBNAME,
-        cnxStr: process.env.MONGODB_CNXSTRING,
-        SECRETSTR: process.env.MONGODB_SECRETSTR
-    },
-    mysql: {
-        client: 'mysql2',
-        connection: process.env.MYSQL
-    },
+    MONGO_CONFIG: mongoConfig,
     NODEMAILER_CONFIG: NODEMAILER_CONFIG,
-    MAIL_ADMIN: process.env.MAIL_ADMIN
+    MAIL_ADMIN: process.env.MAIL_ADMIN,
+    ADMIN_LIST: process.env.ADMIN_LIST
 };
 export default config;

@@ -1,63 +1,63 @@
 import { Error } from "../error/error.js";
+import productRepository from "../repositories/productRepository.js";
 import Product from "../models/product.js";
-import Service from "./service.js";
-import productValidation from "../validations/productValidation.js";
 import productDataValidation from "../validations/productDataValidation.js";
 
-class ProductService extends Service{
+let instance = null;
+
+class ProductService{
     constructor(){
-        super("products")
+        this.container = productRepository;
     }
     getProduct = async (productID) => {
         if(!(await this.checkExistingProduct(productID))){
             throw new Error(`No product was found matching ID ${productID}`, 'BAD_REQUEST');
         }
-        let productFound = await this.container.getItemByID(productID);
-        return new Product(productFound.title, productFound.price, productFound.thumbnail, productFound.id);
+        return (await this.container.getItemByID(productID)).toDTO();
     }
     checkExistingProduct = async (productID) => {
         let productFound = await this.container.getItemByID(productID);
-        return (productFound !== null);
-    }
-    parseProducts = async (productList = []) => {
-        let parsedProducts = [];
-        for(const listedProduct in productList){
-            let product = await productService.getProduct(productList[listedProduct].id);
-            productValidation(productList[listedProduct], product);
-            parsedProducts.push(product);
-        }
-        return parsedProducts;
+        return (productFound !== null && productFound.length !== 0);
     }
     getAllItems = async () => {
         let items = await this.container.getAllItems();
-        let parsedProducts = await this.parseProducts(items);
-        if(parsedProducts < 1){
+        if(items < 1){
             throw new Error(`No product was found`, 'BAD_REQUEST');
         }
-        return parsedProducts;
+        if(items.length === undefined){
+            return items.toDTO();
+        }
+        let itemsDTO = [];
+        items.forEach(product => {
+            itemsDTO.push(product.toDTO())
+        });
+        return itemsDTO;
     }
     modifyProductByID = async (productID, productNewData) => {
         if(!(await this.checkExistingProduct(productID))){
             throw new Error(`No product was found matching ID ${productID}`, 'BAD_REQUEST');
         }
         let productFound = await this.container.getItemByID(productID);
-        let parsedProduct = new Product(productFound.title, +productFound.price, productFound.thumbnail, productFound.id)
-        parsedProduct.modify(productNewData);
+        productFound.modify(productNewData);
         if(await this.container.modifyByID(productID, productNewData)){
-            return parsedProduct;
+            return productFound.toDTO();
         }
         else{
             throw new Error(`There was an error modifing the product`, 'INTERNAL_ERROR') 
         } 
     }
-    createProduct = async (title, price, thumbnail) => {
-        productDataValidation(title, price, thumbnail);
-        let newProduct = new Product(title, +price, thumbnail);
+    createProduct = async (name, price, image, description) => {
+        productDataValidation(name, price, image, description);
+        let newProduct = new Product({
+            name: name, 
+            price: +price, 
+            image: image,
+            description: description}
+        );
         let productID = await this.container.save(newProduct);
         if(!productID){
             throw new Error(`There was an error creating the product`, 'INTERNAL_ERROR') 
         }
-        newProduct.setID(productID);
         return productID;
     }
     deleteProduct = async (productID) => {
@@ -68,7 +68,11 @@ class ProductService extends Service{
             throw new Error(`There was an error deleting the product`, 'INTERNAL_ERROR') 
         }
     }
+    static getInstance(){
+        if(!instance){
+            instance = new ProductService();
+        }
+        return instance;
+    }
 }
-const productService = new ProductService();
-Object.freeze(productService);
-export default productService;
+export default ProductService.getInstance();
