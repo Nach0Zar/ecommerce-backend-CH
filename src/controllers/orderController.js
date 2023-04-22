@@ -8,7 +8,7 @@ class OrderController{
         try{
             let orders = await orderService.getUserOrders(req.cookies.email);
             logger.info(`GET REQUEST successful for getting all orders from user ${req.cookies.email}`);
-            res.status(200).json();
+            res.status(200).json(orders);
         }
         catch(error){
             next(error);

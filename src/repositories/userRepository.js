@@ -10,7 +10,7 @@ class UserRepository {
     }
     parseItems(usersDTOs){
         let parsedUsers = [];
-        usersDTOs.foreach((user)=>{
+        usersDTOs.forEach((user)=>{
             parsedUsers.push(new User(user))
         })
         return parsedUsers;
