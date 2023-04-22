@@ -17,7 +17,7 @@ class ProductService{
     }
     checkExistingProduct = async (productID) => {
         let productFound = await this.container.getItemByID(productID);
-        return (productFound !== null);
+        return (productFound !== null && productFound.length !== 0);
     }
     getAllItems = async () => {
         let items = await this.container.getAllItems();

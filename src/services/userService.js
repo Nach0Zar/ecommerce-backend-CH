@@ -54,7 +54,7 @@ class UserService{
             mailer.send({
                 to: config.MAIL_ADMIN,
                 subject: 'nuevo registro!',
-                text: `nuevo registro: ${JSON.stringify(user)}`
+                text: `nuevo registro: ${JSON.stringify(user.toDTO())}`
             })
             return userID;
         }).catch((error)=>{            
@@ -82,7 +82,7 @@ class UserService{
     }
     checkExistingUser = async (email) => {
         let userFound = await this.container.getItemByCriteria({email: email});
-        return (userFound !== null)
+        return (userFound !== null && userFound.length !== 0)
     }
     static getInstance(){
         if(!instance){

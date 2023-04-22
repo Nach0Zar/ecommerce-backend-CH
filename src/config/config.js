@@ -59,6 +59,6 @@ const config = {
     MONGO_CONFIG: mongoConfig,
     NODEMAILER_CONFIG: NODEMAILER_CONFIG,
     MAIL_ADMIN: process.env.MAIL_ADMIN,
-    ADMIN_MAIL_LIST: process.env.ADMIN_MAIL_LIST
+    ADMIN_LIST: process.env.ADMIN_LIST
 };
 export default config;
