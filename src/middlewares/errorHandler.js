@@ -18,6 +18,10 @@ export default function errorHandler(err, req, res, next){
             res.status(400);
             break;
         }
+        case 'UNAUTHORIZED':{
+            res.status(401);
+            break;
+        }
         default: {
             res.status(500);
             break;

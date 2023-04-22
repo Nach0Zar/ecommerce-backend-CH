@@ -1,9 +1,7 @@
 import { mongoDatabase } from '../db/mongoClient.js';
-import Container from './container.js';
-import { ObjectID } from 'mongodb';
-class MongoDBContainer extends Container {
+import { ObjectId } from 'mongodb'
+export default class MongoDBContainer {
     constructor(dataType) {
-        super(dataType);
         this.items = mongoDatabase.collection(dataType);
     }
     async save(object) {
@@ -11,7 +9,7 @@ class MongoDBContainer extends Container {
         return (await this.items.insertOne(object)).insertedId.toString()
     }
     async getItemByID(idItem) {
-        let criterio = { _id: ObjectID(idItem) };
+        let criterio = { _id: ObjectId(idItem) };
         let item = await this.items.find(criterio).toArray();
         if(!item.toString()){//to check if no doc was found
             return null;
@@ -31,18 +29,19 @@ class MongoDBContainer extends Container {
     }
     async getItemByCriteria(criteria) {
         let item = await this.items.find(criteria).toArray();
+        if(item instanceof Array && item.length !== 0) return (this.parseMultipleData(item))
         if(!item.toString()){//to check if no doc was found
             return null;
         }
-        return (this.parseData(item[0]))
+        return (this.parseData(item))
     }
     async modifyByID(idItem, newItemParam){
         delete newItemParam.id;
-        let query = await this.items.updateOne({ _id: ObjectID(idItem) }, { $set: newItemParam });
+        let query = await this.items.updateOne({ _id: ObjectId(idItem) }, { $set: newItemParam });
         return (query.modifiedCount > 0);
     }
     async deleteByID(idItem){
-        let criterio = { _id: ObjectID(idItem) };
+        let criterio = { _id: ObjectId(idItem) };
         let query = await this.items.deleteOne(criterio);
         return (query.deletedCount > 0);
     }
@@ -53,5 +52,7 @@ class MongoDBContainer extends Container {
         delete data._id;
         return data
     }
+    parseMultipleData(items){
+        return items.map((item) => this.parseData(item))
+    }
 }
-export default MongoDBContainer;

@@ -1,11 +1,12 @@
 import { createTransport } from 'nodemailer';
 import config from '../config/config.js';
 
-class MailerClass {
-    constructor(config) {
-        this.nodemailerClient = createTransport(config)
-    }
+let instance = null;
 
+class Mailer{
+    constructor() {
+        this.nodemailerClient = createTransport(config.NODEMAILER_CONFIG)
+    }
     async send(mailOptions) {
         try {
             return await this.nodemailerClient.sendMail(mailOptions)
@@ -13,8 +14,12 @@ class MailerClass {
             throw new Error(error.message)
         }
     }
+    static getInstance(){
+        if(!instance){
+            instance = new Mailer();
+        }
+        return instance;
+    }
 }
-const mailer = new MailerClass(config.NODEMAILER_CONFIG);
-Object.freeze(mailer);
-export default mailer;
+export default Mailer.getInstance();
 
