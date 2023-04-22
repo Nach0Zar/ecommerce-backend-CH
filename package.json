@@ -6,7 +6,9 @@
   "main": "src/server.js",
   "scripts": {
     "start": "nodemon --exec node -r dotenv/config src/server.js",
-    "start:cluster": "nodemon --exec node -r dotenv/config src/server.js --mode=cluster"
+    "start:cluster": "nodemon --exec node -r dotenv/config src/server.js --mode=cluster",
+    "startProd": "nodemon --exec node -r dotenv/config src/server.js --env=production",
+    "startProd:cluster": "nodemon --exec node -r dotenv/config src/server.js --mode=cluster --env=production"
   },
   "repository": {
     "type": "git",
