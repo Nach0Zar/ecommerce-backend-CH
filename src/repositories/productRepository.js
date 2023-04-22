@@ -25,7 +25,6 @@ class ProductsRepository {
     }
     async getAllItems(){
         let productsDTOs = await this.#dao.getAllItems();
-        console.log(productsDTOs)
         if (!productsDTOs) return null
         if (productsDTOs.length === 1 || productsDTOs.length === undefined) {
             return new Product(productsDTOs[0])

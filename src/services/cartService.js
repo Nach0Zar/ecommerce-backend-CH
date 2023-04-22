@@ -46,7 +46,7 @@ class CartService{
     }
     checkExistingCart = async (cartID) => {
         let cartFound = await this.container.getItemByID(cartID);
-        return (cartFound !== null)
+        return (cartFound !== null && cartFound.length !== 0)
     }
     deleteAllProductsFromCart = async (cartID) => {
         if(!this.checkExistingCart(cartID)){
