@@ -10,7 +10,7 @@ class CartRepository {
     }
     parseItems(cartsDTOs){
         let parsedCarts = [];
-        cartsDTOs.foreach((cart)=>{
+        cartsDTOs.forEach((cart)=>{
             parsedCarts.push(new Cart(cart))
         })
         return parsedCarts;

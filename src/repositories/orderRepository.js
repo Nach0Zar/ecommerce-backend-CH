@@ -10,7 +10,7 @@ class OrderRepository {
     }
     parseItems(ordersDTOs){
         let parsedOrders = [];
-        ordersDTOs.foreach((order)=>{
+        ordersDTOs.forEach((order)=>{
             parsedOrders.push(new Order(order))
         })
         return parsedOrders;

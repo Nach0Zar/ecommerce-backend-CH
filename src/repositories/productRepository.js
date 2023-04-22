@@ -10,7 +10,7 @@ class ProductsRepository {
     }
     parseItems(productsDTOs){
         let parsedProducts = [];
-        productsDTOs.foreach((product)=>{
+        productsDTOs.forEach((product)=>{
             parsedProducts.push(new Product(product));
         })
         return parsedProducts;

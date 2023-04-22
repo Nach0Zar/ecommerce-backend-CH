@@ -29,10 +29,11 @@ export default class MongoDBContainer {
     }
     async getItemByCriteria(criteria) {
         let item = await this.items.find(criteria).toArray();
+        if(item instanceof Array) return (this.parseMultipleData(item))
         if(!item.toString()){//to check if no doc was found
             return null;
         }
-        return (this.parseData(item[0]))//TODO CHECK WITH OTHERS SINCE IT RETURNS ONLY 1
+        return (this.parseData(item))//TODO CHECK WITH OTHERS SINCE IT RETURNS ONLY 1
     }
     async modifyByID(idItem, newItemParam){
         delete newItemParam.id;
@@ -50,5 +51,8 @@ export default class MongoDBContainer {
         }
         delete data._id;
         return data
+    }
+    parseMultipleData(items){
+        return items.map((item) => this.parseData(item))
     }
 }
